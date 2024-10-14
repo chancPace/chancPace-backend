@@ -1,0 +1,52 @@
+# Node.js 관련
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 환경 파일
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# 로그 파일
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 운영 중 생기는 파일
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# 디버그 파일
+.DS_Store
+*.swp
+*.swo
+*.swp
+
+# 테스트 관련
+/coverage
+/lcov-report
+
+# 빌드 파일
+build/
+dist/
+.tmp/
+
+# 프로젝트 바이너리
+*.tsbuildinfo
+
+# IDE/에디터 설정 파일
+.vscode/
+.idea/
+
+# 시스템 파일
+Thumbs.db
+.DS_Store
