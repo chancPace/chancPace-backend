@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 
 import userRouter from './router/user.js';
+import paymentRouter from "./router/payment.js";
 
 dotenv.config();
 
@@ -17,7 +18,9 @@ app.get('/', (req, res) => {
   res.send('서버연결 완');
 });
 
+// API 라우터
 app.use('/api/user', userRouter);
+app.use('/api/payment', paymentRouter);
 
 db.sequelize
   .sync({ force: false })

@@ -13,9 +13,30 @@ const PaymentModel = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    // 결제 키
+    paymentKey: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
+    // 주문 ID
+    orderId: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     // 결제 상태
-    location: {
-      type: DataTypes.ENUM('completed', 'pending', 'failed', 'refunded'),
+    status: {
+      type: DataTypes.ENUM('COMPLETED', 'PENDING', 'FAILED', 'REFUNDED'), // 상태 필드
+      allowNull: false,
+    },
+    // 결제 수단
+    paymentMethod: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    // 결제한 유저 ID
+    userId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
   });
