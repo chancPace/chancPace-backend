@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 
 const User = db.User;
 
-// 회원가입
+//ANCHOR - 회원가입
 export const signup = async (req, res) => {
   try {
     const { email, password, role, agreed } = req.body;
@@ -29,7 +29,7 @@ export const signup = async (req, res) => {
   }
 };
 
-// 로그인
+//ANCHOR - 로그인
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;

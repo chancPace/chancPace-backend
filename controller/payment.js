@@ -15,7 +15,8 @@ if (!TOSS_SECRET_KEY || !JWT_ACCESS_SECRET_KEY) {
   throw new Error('환경 변수가 설정되지 않았습니다. TOSS_SECRET_KEY 및 JWT_ACCESS_SECRET_KEY를 확인하세요.');
 }
 
-export const confirm = async (req, res) => {
+//ANCHOR - 결제 확인 및 처리
+export const verifyPayment = async (req, res) => {
   try {
     const { paymentKey, orderId, amount, userToken } = req.body;
 
@@ -34,7 +35,6 @@ export const confirm = async (req, res) => {
       return res.status(404).json({ result: false, message: '사용자를 찾을 수 없습니다.' });
     }
 
-    // 토스 결제 확인 요청
     let response;
     try {
       response = await axios.post(
@@ -51,7 +51,6 @@ export const confirm = async (req, res) => {
           },
         }
       );
-      console.log('🚀 ~ confirm ~ response:', response);
     } catch (axiosError) {
       console.error('결제 확인 요청 실패:', axiosError.response?.data || axiosError.message);
       return res.status(400).json({
@@ -77,7 +76,6 @@ export const confirm = async (req, res) => {
       return res.status(500).json({ result: false, message: '결제 정보를 저장하는 데 실패했습니다.' });
     }
 
-    // 결제 성공 응답
     res.status(200).json({ result: true, response: response.data, message: '결제 성공' });
   } catch (error) {
     console.error('결제 검증 실패:', error.response?.data || error.message);
@@ -90,7 +88,8 @@ export const confirm = async (req, res) => {
   }
 };
 
-export const mypayment = async (req, res) => {
+//ANCHOR - 사용자 결제 정보 조회
+export const listUserPayments = async (req, res) => {
   const { email } = req.body;
 
   try {
