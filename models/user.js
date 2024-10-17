@@ -9,7 +9,7 @@ const UserModel = (sequelize) => {
       autoIncrement: true,
     },
     // 유저이름
-    username: {
+    userName: {
       type: DataTypes.STRING,
       allowNull: true,
     },

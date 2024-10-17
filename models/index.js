@@ -1,6 +1,13 @@
 import Sequelize from 'sequelize';
 import configFile from '../config/config.js';
+
 import UserModel from './user.js';
+import CategoryModel from './category.js';
+import SpaceModel from './space.js';
+import ReviewModel from './review.js';
+import PaymentModel from './payment.js';
+import BookingModel from './booking.js';
+import CouponModel from "./coupon.js";
 
 const env = process.env.NODE_ENV || 'development';
 const config = configFile[env];
@@ -8,8 +15,20 @@ const db = {};
 
 const sequelize = new Sequelize(config.database, config.username, config.password, config);
 
-// 모델 정의
+// 유저 모델
 db.User = UserModel(sequelize);
+// 카테고리 모델
+db.Category = CategoryModel(sequelize);
+// 공간 모델
+db.Space = SpaceModel(sequelize);
+// 리뷰 모델
+db.Review = ReviewModel(sequelize);
+// 결제 모델
+db.Payment = PaymentModel(sequelize);
+// 예약 모델
+db.Booking = BookingModel(sequelize);
+// 쿠폰 모델
+db.Coupon = CouponModel(sequelize);
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
