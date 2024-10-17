@@ -7,7 +7,8 @@ import SpaceModel from './space.js';
 import ReviewModel from './review.js';
 import PaymentModel from './payment.js';
 import BookingModel from './booking.js';
-import CouponModel from "./coupon.js";
+import CouponModel from './coupon.js';
+import TagModel from './tag.js';
 
 const env = process.env.NODE_ENV || 'development';
 const config = configFile[env];
@@ -29,6 +30,8 @@ db.Payment = PaymentModel(sequelize);
 db.Booking = BookingModel(sequelize);
 // 쿠폰 모델
 db.Coupon = CouponModel(sequelize);
+// 태그 모델
+db.Tag = TagModel(sequelize);
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;

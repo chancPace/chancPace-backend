@@ -46,7 +46,7 @@ const UserModel = (sequelize) => {
     },
     // 계정 권한
     role: {
-      type: DataTypes.ENUM(['user', 'host', 'admin']),
+      type: DataTypes.ENUM('user', 'host', 'admin'),
       allowNull: false,
     },
     // 마케팅 약관 동의

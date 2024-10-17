@@ -15,7 +15,7 @@ const PaymentModel = (sequelize) => {
     },
     // 결제 상태
     location: {
-      type: DataTypes.ENUM(['completed', 'pending', 'failed', 'refunded']),
+      type: DataTypes.ENUM('completed', 'pending', 'failed', 'refunded'),
       allowNull: false,
     },
   });

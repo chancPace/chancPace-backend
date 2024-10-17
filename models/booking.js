@@ -25,7 +25,7 @@ const BookingModel = (sequelize) => {
     },
     // 예약 상태
     BookingStatus: {
-      type: DataTypes.ENUM(['pending', 'approved', 'cancelled', 'completed']),
+      type: DataTypes.ENUM('pending', 'approved', 'cancelled', 'completed'),
       allowNull: false,
     },
   });

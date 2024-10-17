@@ -40,12 +40,12 @@ const SpaceModel = (sequelize) => {
     },
     // 청소 시간
     cleanTime: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: true,
     },
     // 공간 상태
     spaceStatus: {
-      type: DataTypes.ENUM(['available', 'unavailable']),
+      type: DataTypes.ENUM('available', 'unavailable'),
       allowNull: false,
     },
     // 오픈 상태
