@@ -38,8 +38,8 @@ const CouponModel = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: true,
       references: {
-        model: 'User', // 연결할 모델
-        key: 'id', // 참조할 키
+        model: 'users',
+        key: 'id',
       },
     },
   });

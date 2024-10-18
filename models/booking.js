@@ -33,7 +33,7 @@ const BookingModel = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'User',
+        model: 'users',
         key: 'id',
       },
     },
@@ -42,7 +42,7 @@ const BookingModel = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Space',
+        model: 'spaces',
         key: 'id',
       },
     },

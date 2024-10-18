@@ -58,7 +58,7 @@ const SpaceModel = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'Category',
+        model: 'categories',
         key: 'id',
       },
     },
@@ -73,7 +73,7 @@ const SpaceModel = (sequelize) => {
     // Space : Tag (M:N) 예시
     Space.belongsToMany(db.Tag, { through: 'SpaceTag', foreignKey: 'spaceId', otherKey: 'tagId' });
   };
-  
+
   return Space;
 };
 
