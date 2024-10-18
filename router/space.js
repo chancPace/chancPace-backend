@@ -3,6 +3,6 @@ import { addNewSpace } from '../controller/space.js';
 
 const router = express.Router();
 
-router.get('/addNewSpace', addNewSpace);
+router.get('/add-new-space', addNewSpace);
 
 export default router;

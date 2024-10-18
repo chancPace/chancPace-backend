@@ -1,6 +1,7 @@
 import db from '../models/index.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { where } from 'sequelize';
 
 const User = db.User;
 
@@ -39,7 +40,7 @@ export const login = async (req, res) => {
       const decryption = await bcrypt.compare(password, find.password);
 
       if (decryption) {
-        const response = {
+        const userInfo = {
           id: find.id,
           email: find.email,
           userName: find.userName,
@@ -65,14 +66,42 @@ export const login = async (req, res) => {
         res.status(200).json({
           message: '로그인 성공. 토큰이 발급 되었습니다.',
           token: token,
-          response: response,
+          data: userInfo,
         });
       } else {
-        res.status(401).json({ result: false, response: null, message: '비밀번호가 틀렸습니다' });
+        res.status(401).json({ result: false, data: null, message: '비밀번호가 틀렸습니다' });
       }
     } else {
-      res.status(404).json({ result: false, response: null, message: '회원이 아닙니다.' });
+      res.status(404).json({ result: false, data: null, message: '회원이 아닙니다.' });
     }
+  } catch (error) {
+    res.status(500).json({ result: false, message: '서버오류' });
+  }
+};
+
+//ANCHOR - 토큰을 이용해 유저 정보 가져오기
+export const getUserDataByToken = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(404).json({ result: false, message: '토큰 정보가 없습니다.' });
+    }
+
+    let jwtUserInfo;
+    try {
+      jwtUserInfo = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+    } catch (error) {
+      return res.status(401).json({ result: false, message: '유효하지 않은 토큰입니다.' });
+    }
+    const email = jwtUserInfo.user.email;
+    const userInfo = await User.findOne({ where: { email } });
+
+    if (!userInfo) {
+      return res.status(404).json({ result: false, message: '사용자를 찾을 수 없습니다.' });
+    }
+
+    res.status(200).json({ result: true, data: userInfo, message: '회원정보가 재발급 되었습니다.' });
   } catch (error) {
     res.status(500).json({ result: false, message: '서버오류' });
   }

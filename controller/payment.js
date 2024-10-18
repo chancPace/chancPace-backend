@@ -76,7 +76,7 @@ export const verifyPayment = async (req, res) => {
       return res.status(500).json({ result: false, message: '결제 정보를 저장하는 데 실패했습니다.' });
     }
 
-    res.status(200).json({ result: true, response: response.data, message: '결제 성공' });
+    res.status(200).json({ result: true, data: response.data, message: '결제 성공' });
   } catch (error) {
     console.error('결제 검증 실패:', error.response?.data || error.message);
 
@@ -112,7 +112,7 @@ export const listUserPayments = async (req, res) => {
 
     res.status(200).json({
       result: true,
-      payment: payment,
+      data: payment,
       message: '결제 정보를 성공적으로 가져왔습니다.',
     });
   } catch (error) {

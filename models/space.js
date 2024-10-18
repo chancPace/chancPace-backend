@@ -56,7 +56,7 @@ const SpaceModel = (sequelize) => {
     // 카테고리 ID
     categoryId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'categories',
         key: 'id',
