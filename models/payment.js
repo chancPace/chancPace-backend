@@ -9,7 +9,7 @@ const PaymentModel = (sequelize) => {
       autoIncrement: true,
     },
     // 결제 금액
-    amount: {
+    paymentPrice: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -25,7 +25,7 @@ const PaymentModel = (sequelize) => {
       allowNull: false,
     },
     // 결제 상태
-    status: {
+    paymentStatus: {
       type: DataTypes.ENUM('COMPLETED', 'PENDING', 'FAILED', 'REFUNDED'), // 상태 필드
       allowNull: false,
     },

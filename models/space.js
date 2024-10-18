@@ -14,7 +14,7 @@ const SpaceModel = (sequelize) => {
       allowNull: false,
     },
     // 공간 위치
-    location: {
+    spaceLocation: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -24,7 +24,7 @@ const SpaceModel = (sequelize) => {
       allowNull: true,
     },
     // 원가
-    price: {
+    spacePrice: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
@@ -45,7 +45,7 @@ const SpaceModel = (sequelize) => {
     },
     // 공간 상태
     spaceStatus: {
-      type: DataTypes.ENUM('available', 'unavailable'),
+      type: DataTypes.ENUM('AVAILABLE', 'UNAVAILABLE'),
       allowNull: false,
     },
     // 오픈 상태

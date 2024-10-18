@@ -14,7 +14,7 @@ const CategoryModel = (sequelize) => {
       allowNull: true,
     },
     // 부모ID
-    pid: {
+    pId: {
       type: DataTypes.STRING,
       allowNull: true,
     },

@@ -14,22 +14,22 @@ const CouponModel = (sequelize) => {
       allowNull: false,
     },
     // 할인 금액
-    discountAmount: {
+    discountPrice: {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
     // 쿠폰 만료일
-    description: {
+    expirationDate: {
       type: DataTypes.DATE,
       allowNull: false,
     },
     // 쿠폰 활성 상태
-    price: {
+    isActive: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
     },
     // 쿠폰 사용 여부
-    discount: {
+    isUsed: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
     },

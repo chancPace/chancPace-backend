@@ -4,7 +4,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 
 import userRouter from './router/user.js';
-import paymentRouter from "./router/payment.js";
+import paymentRouter from './router/payment.js';
+import spaceRouter from './router/space.js';
 
 dotenv.config();
 
@@ -21,6 +22,7 @@ app.get('/', (req, res) => {
 // API 라우터
 app.use('/api/user', userRouter);
 app.use('/api/payment', paymentRouter);
+app.use('/api/space', spaceRouter);
 
 db.sequelize
   .sync({ force: false })

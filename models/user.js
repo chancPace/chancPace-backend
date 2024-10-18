@@ -8,9 +8,14 @@ const UserModel = (sequelize) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    // 유저이름
+    // 유저 이름
     userName: {
       type: DataTypes.STRING,
+      allowNull: true,
+    },
+    // 유저 성별
+    gender: {
+      type: DataTypes.ENUM('MALE', 'FEMALE'),
       allowNull: true,
     },
     // 이메일

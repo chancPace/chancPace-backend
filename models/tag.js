@@ -8,7 +8,7 @@ const TagModel = (sequelize) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    // 유저이름
+    // 태그 이름
     tagTitle: {
       type: DataTypes.STRING,
       allowNull: false,

@@ -63,8 +63,8 @@ export const verifyPayment = async (req, res) => {
     const paymentData = {
       paymentKey: paymentKey,
       orderId: orderId,
-      amount: amount,
-      status: 'COMPLETED',
+      paymentPrice: amount,
+      priceStatus: 'COMPLETED',
       paymentMethod: response.data.method || 'UNKNOWN',
       userId: user.id,
     };

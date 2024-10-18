@@ -8,8 +8,8 @@ const ReviewModel = (sequelize) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    // 공간 이름
-    comment: {
+    // 리뷰 내용
+    reviewComment: {
       type: DataTypes.TEXT,
       allowNull: false,
     },
