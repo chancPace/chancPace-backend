@@ -33,6 +33,13 @@ db.Coupon = CouponModel(sequelize);
 // 태그 모델
 db.Tag = TagModel(sequelize);
 
+// 관계 설정
+Object.keys(db).forEach((modelName) => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
+
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 

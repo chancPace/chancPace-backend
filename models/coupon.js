@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 
 const CouponModel = (sequelize) => {
-  return sequelize.define('Coupon', {
+  const Coupon = sequelize.define('Coupon', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -33,7 +33,24 @@ const CouponModel = (sequelize) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
     },
+    // 유저 ID
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'User', // 연결할 모델
+        key: 'id', // 참조할 키
+      },
+    },
   });
+  
+  // 관계 설정
+  Coupon.associate = (db) => {
+    // Coupon : User (N:1)
+    Coupon.belongsTo(db.User, { foreignKey: 'userId', targetKey: 'id' });
+  };
+
+  return Coupon;
 };
 
 export default CouponModel;

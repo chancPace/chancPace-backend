@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 
 const UserModel = (sequelize) => {
-  return sequelize.define('User', {
+  const User = sequelize.define('User', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -51,8 +51,14 @@ const UserModel = (sequelize) => {
     },
     // 계정 권한
     role: {
-      type: DataTypes.ENUM('user', 'host', 'admin'),
+      type: DataTypes.ENUM('USER', 'HOST', 'ADMIN'),
       allowNull: false,
+    },
+    // 계정 상태
+    accountStatus: {
+      type: DataTypes.ENUM('ACTIVE', 'BLACKLISTED', 'WITHDRAWN'),
+      allowNull: false,
+      defaultValue: 'ACTIVE',
     },
     // 마케팅 약관 동의
     isMarketingAgreed: {
@@ -60,6 +66,18 @@ const UserModel = (sequelize) => {
       allowNull: true,
     },
   });
+
+  // 관계 설정
+  User.associate = (db) => {
+    // User : Review (1:N)
+    User.hasMany(db.Review, { foreignKey: 'userId', sourceKey: 'id' });
+    // User : Booking (1:N)
+    User.hasMany(db.Booking, { foreignKey: 'userId', sourceKey: 'id' });
+    // User : Payment (1:N)
+    User.hasMany(db.Payment, { foreignKey: 'userId', sourceKey: 'id' });
+  };
+
+  return User;
 };
 
 export default UserModel;

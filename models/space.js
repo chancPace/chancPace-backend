@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 
 const SpaceModel = (sequelize) => {
-  return sequelize.define('Space', {
+  const Space = sequelize.define('Space', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -53,7 +53,28 @@ const SpaceModel = (sequelize) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
     },
+    // 카테고리 ID
+    categoryId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Category',
+        key: 'id',
+      },
+    },
   });
+
+  // 관계 설정
+  Space.associate = (db) => {
+    // Space : Review (1:N)
+    Space.hasMany(db.Review, { foreignKey: 'spaceId', sourceKey: 'id' });
+    // Space : Booking (1:N)
+    Space.hasMany(db.Booking, { foreignKey: 'spaceId', sourceKey: 'id' });
+    // Space : Tag (M:N) 예시
+    Space.belongsToMany(db.Tag, { through: 'SpaceTag', foreignKey: 'spaceId', otherKey: 'tagId' });
+  };
+  
+  return Space;
 };
 
 export default SpaceModel;

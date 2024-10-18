@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 
 const PaymentModel = (sequelize) => {
-  return sequelize.define('Payment', {
+  const Payment = sequelize.define('Payment', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -39,7 +39,24 @@ const PaymentModel = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    // 유저 ID
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'User',
+        key: 'id',
+      },
+    },
   });
+
+  // 관계 설정
+  Payment.associate = (db) => {
+    // Payment : User (N:1)
+    Payment.belongsTo(db.User, { foreignKey: 'userId', targetKey: 'id' });
+  };
+
+  return Payment;
 };
 
 export default PaymentModel;

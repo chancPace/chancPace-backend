@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 
 const BookingModel = (sequelize) => {
-  return sequelize.define('Booking', {
+  const Booking = sequelize.define('Booking', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -28,7 +28,35 @@ const BookingModel = (sequelize) => {
       type: DataTypes.ENUM('PENDING', 'APPROVED', 'CANCELLED', 'COMPLETED'),
       allowNull: false,
     },
+    // 유저 ID
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'User',
+        key: 'id',
+      },
+    },
+    // 공간 ID
+    spaceId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'Space',
+        key: 'id',
+      },
+    },
   });
+  
+  // 관계 설정
+  Booking.associate = (db) => {
+    // Booking : User (N:1)
+    Booking.belongsTo(db.User, { foreignKey: 'userId', targetKey: 'id' });
+    // Booking : Space (N:1)
+    Booking.belongsTo(db.Space, { foreignKey: 'spaceId', targetKey: 'id' });
+  };
+
+  return Booking;
 };
 
 export default BookingModel;

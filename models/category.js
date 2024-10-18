@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 
 const CategoryModel = (sequelize) => {
-  return sequelize.define('Category', {
+  const Category = sequelize.define('Category', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -19,6 +19,14 @@ const CategoryModel = (sequelize) => {
       allowNull: true,
     },
   });
+
+  // 관계 설정
+  Category.associate = (db) => {
+    // Category : Space (1:N)
+    Category.hasMany(db.Space, { foreignKey: 'categoryId', sourceKey: 'id' });
+  };
+
+  return Category;
 };
 
 export default CategoryModel;
