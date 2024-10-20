@@ -11,7 +11,7 @@ export const signup = async (req, res) => {
     const { email, password, role, agreed, adminSecretKey } = req.body;
 
     if (role === 'admin') {
-      if (adminSecretKey === process.env.ADMIN_SECRET_KEY) {
+      if (!adminSecretKey === process.env.ADMIN_SECRET_KEY) {
         return res.status(403).json({ result: false, message: '유효하지 않은 관리자 비밀키입니다.' });
       }
     }
