@@ -8,7 +8,14 @@ const User = db.User;
 //ANCHOR - 회원가입
 export const signup = async (req, res) => {
   try {
-    const { email, password, role, agreed } = req.body;
+    const { email, password, role, agreed, adminSecretKey } = req.body;
+
+    if (role === 'admin') {
+      if (adminSecretKey === process.env.ADMIN_SECRET_KEY) {
+        return res.status(403).json({ result: false, message: '유효하지 않은 관리자 비밀키입니다.' });
+      }
+    }
+
     const find = await User.findOne({ where: { email } });
 
     if (find) {
@@ -23,7 +30,7 @@ export const signup = async (req, res) => {
         isMarketingAgreed: agreed,
       });
 
-      res.json({ result: true, message: '회원가입 성공' });
+      res.status(200).json({ result: true, message: role === 'admin' ? '관리자 회원가입 성공' : '회원가입 성공' });
     }
   } catch (error) {
     res.status(500).json({ result: false, message: '서버오류' });
@@ -102,6 +109,15 @@ export const getUserDataByToken = async (req, res) => {
     }
 
     res.status(200).json({ result: true, data: userInfo, message: '회원정보가 재발급 되었습니다.' });
+  } catch (error) {
+    res.status(500).json({ result: false, message: '서버오류' });
+  }
+};
+
+//ANCHOR - 회원 조회
+export const findUserInfo = (req, res) => {
+  try {
+    const {} = req.body;
   } catch (error) {
     res.status(500).json({ result: false, message: '서버오류' });
   }

@@ -8,7 +8,8 @@ export const addNewSpace = async (req, res) => {
     const { spaceName, spaceLocation, description, spacePrice, discount, amenities, cleanTime, spaceStatus, isOpen } =
       req.body;
 
-      //FIXME - 공간 등록 요청한 사람이 host인지 검사 필요???
+    //FIXME - 공간 등록 요청한 사람이 host인지 검사 필요???
+    //FIXME - 이미지, 기준인원(최소인원~최대인원) 검사 추가
 
     const newSpace = await Space.create({
       spaceName,
