@@ -75,6 +75,8 @@ const UserModel = (sequelize) => {
     User.hasMany(db.Booking, { foreignKey: 'userId', sourceKey: 'id' });
     // User : Payment (1:N)
     User.hasMany(db.Payment, { foreignKey: 'userId', sourceKey: 'id' });
+    // User : Space (1:N)
+    User.hasMany(db.Space, { foreignKey: 'userId', sourceKey: 'id' });
   };
 
   return User;

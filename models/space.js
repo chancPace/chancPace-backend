@@ -53,6 +53,21 @@ const SpaceModel = (sequelize) => {
       type: DataTypes.BOOLEAN,
       allowNull: false,
     },
+    // 최소 손님 수
+    minGuests: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    // 최대 손님 수
+    maxGuests: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    // 주의사항
+    guidelines: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
     // 카테고리 ID
     categoryId: {
       type: DataTypes.INTEGER,
@@ -62,6 +77,16 @@ const SpaceModel = (sequelize) => {
         key: 'id',
       },
     },
+    // 유저 ID
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'users',
+        key: 'id',
+      },
+      onDelete: 'CASCADE',
+    },
   });
 
   // 관계 설정
@@ -70,8 +95,12 @@ const SpaceModel = (sequelize) => {
     Space.hasMany(db.Review, { foreignKey: 'spaceId', sourceKey: 'id' });
     // Space : Booking (1:N)
     Space.hasMany(db.Booking, { foreignKey: 'spaceId', sourceKey: 'id' });
-    // Space : Tag (M:N) 예시
+    // Space : Tag (M:N)
     Space.belongsToMany(db.Tag, { through: 'SpaceTag', foreignKey: 'spaceId', otherKey: 'tagId' });
+    // Space : Image (1:N)
+    Space.hasMany(db.Image, { foreignKey: 'spaceId', sourceKey: 'id' });
+    // Space : User (N:1)
+    Space.belongsTo(db.User, { foreignKey: 'userId', targetKey: 'id' });
   };
 
   return Space;

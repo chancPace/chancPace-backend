@@ -11,7 +11,7 @@ export const signup = async (req, res) => {
     const { email, password, role, agreed, adminSecretKey } = req.body;
 
     if (role === 'admin') {
-      if (!adminSecretKey === process.env.ADMIN_SECRET_KEY) {
+      if (adminSecretKey !== process.env.ADMIN_SECRET_KEY) {
         return res.status(403).json({ result: false, message: '유효하지 않은 관리자 비밀키입니다.' });
       }
     }
@@ -62,7 +62,6 @@ export const login = async (req, res) => {
         const jwtToken = {
           id: find.id,
           email: find.email,
-          userName: find.userName,
         };
 
         // 토큰 발급
@@ -115,6 +114,7 @@ export const getUserDataByToken = async (req, res) => {
 };
 
 //ANCHOR - 회원 조회
+//FIXME - 로직 만들어야함
 export const findUserInfo = (req, res) => {
   try {
     const {} = req.body;

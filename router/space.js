@@ -1,8 +1,8 @@
 import express from 'express';
-import { addNewSpace } from '../controller/space.js';
+import { addNewSpace, uploadSpaceImage } from '../controller/space.js';
 
 const router = express.Router();
 
-router.get('/add-new-space', addNewSpace);
+router.post('/add-new-space', uploadSpaceImage, addNewSpace);
 
 export default router;
