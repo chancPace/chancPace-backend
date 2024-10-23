@@ -1,4 +1,3 @@
-import { Transaction } from 'sequelize';
 import db from '../models/index.js';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
