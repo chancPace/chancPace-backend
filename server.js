@@ -6,6 +6,7 @@ import cors from 'cors';
 import userRouter from './router/user.js';
 import paymentRouter from './router/payment.js';
 import spaceRouter from './router/space.js';
+import categoryRouter from './router/category.js'
 
 dotenv.config();
 
@@ -23,6 +24,7 @@ app.get('/', (req, res) => {
 app.use('/api/user', userRouter);
 app.use('/api/payment', paymentRouter);
 app.use('/api/space', spaceRouter);
+app.use('/api/category', categoryRouter)
 
 db.sequelize
   // alter: true / 데이터 유지하고 구조만 업데이트
