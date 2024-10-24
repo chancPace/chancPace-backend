@@ -52,3 +52,5 @@ dist/
 Thumbs.db
 .DS_Store
 
+#uploads파일 
+uploads
