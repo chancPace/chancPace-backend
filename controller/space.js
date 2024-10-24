@@ -47,6 +47,10 @@ export const addNewSpace = async (req, res) => {
             minGuests, // 최소인원
             maxGuests, // 최대 인원
             guidelines, // 주의 사항
+            categoryId, //카테고리
+            businessStartTime, //영업시작시간
+            businessEndTime, //영업종료시간
+
         } = req.body;
 
         const token = req.headers.authorization?.split(' ')[1]; // Bearer 토큰 추출
@@ -130,6 +134,9 @@ export const addNewSpace = async (req, res) => {
                 maxGuests,
                 guidelines,
                 userId: user.id,
+                categoryId,
+                businessStartTime,
+                businessEndTime
             },
             { transaction: t }
         );

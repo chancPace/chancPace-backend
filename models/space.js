@@ -87,6 +87,14 @@ const SpaceModel = (sequelize) => {
       },
       onDelete: 'CASCADE',
     },
+    businessStartTime: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    businessEndTime: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    }
   });
 
   // 관계 설정
