@@ -1,7 +1,6 @@
 import db from '../models/index.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { where } from 'sequelize';
 
 const { User } = db;
 
