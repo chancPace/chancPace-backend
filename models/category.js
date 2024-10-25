@@ -22,10 +22,7 @@ const CategoryModel = (sequelize) => {
 
   // 관계 설정
   Category.associate = (db) => {
-    // 자기 자신과의 관계 (부모 카테고리 설정)
-    Category.hasMany(db.Category, { foreignKey: 'pId', as: 'subCategories' });
-    Category.belongsTo(db.Category, { foreignKey: 'pId', as: 'parentCategory' });
-    
+
     // Category : Space (1:N)
     Category.hasMany(db.Space, { foreignKey: 'categoryId', sourceKey: 'id' });
   };
