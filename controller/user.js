@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { where } from 'sequelize';
 
-const User = db.User;
+const { User } = db;
 
 //ANCHOR - 회원가입
 export const signup = async (req, res) => {

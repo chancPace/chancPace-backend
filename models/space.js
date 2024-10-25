@@ -68,6 +68,14 @@ const SpaceModel = (sequelize) => {
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    businessStartTime: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    businessEndTime: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     // 카테고리 ID
     categoryId: {
       type: DataTypes.INTEGER,
@@ -87,14 +95,6 @@ const SpaceModel = (sequelize) => {
       },
       onDelete: 'CASCADE',
     },
-    businessStartTime: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
-    businessEndTime: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    }
   });
 
   // 관계 설정
