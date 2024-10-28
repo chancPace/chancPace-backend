@@ -22,7 +22,6 @@ const CategoryModel = (sequelize) => {
 
   // 관계 설정
   Category.associate = (db) => {
-
     // Category : Space (1:N)
     Category.hasMany(db.Space, { foreignKey: 'categoryId', sourceKey: 'id' });
   };
