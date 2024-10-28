@@ -2,79 +2,60 @@ import { Op, where } from 'sequelize';
 import db from '../models/index.js';
 const { Category } = db;
 
-//ANCHOR - 카테고리 대분류 추가
-export const addBigCategory = async (req, res) => {
-  const { categoryName } = req.body;
-  if (!categoryName) {
-    return res.status(400).json({
-      result: false,
-      message: '카테고리 이름을 입력해주세요.',
-    });
-  }
-
+//ANCHOR - 카테고리 추가
+export const addCategory = async (req, res) => {
   try {
-    const duplicationCategory = await Category.findOne({ where: { categoryName, pId: null } });
-    if (duplicationCategory) {
-      return res.status(409).json({
-        result: false,
-        message: ' 이미 존재하는 카테고리 이름입니다',
-      });
-    }
-
-    const newCategory = await Category.create({
-      categoryName,
-      pId: null,
-    });
-
-    res.status(201).json({ result: true, newCategory, message: '대분류 등록이 완료되었습니다.' });
-  } catch (error) {
-    res.status(500).json({
-      result: false,
-      message: '카테고리 저장 중 오류가 발생했습니다.',
-      error,
-    });
-  }
-};
-
-//ANCHOR - 카테고리 소분류 추가
-export const addSmallCategory = async (req, res) => {
-  try {
-    const { bigCategoryId, categoryName } = req.body;
+    const { categoryName, pId } = req.body;
 
     if (!categoryName) {
       return res.status(400).json({
         result: false,
-        message: '카테고리 이름을 입력해 주세요',
+        message: '카테고리 이름을 입력해주세요.',
       });
     }
 
-    // 대분류가 존재하는지 확인
-    const bigCategoryExists = await Category.findOne({ where: { id: bigCategoryId, pId: null } });
-    if (!bigCategoryExists) {
-      return res.status(404).json({
-        result: false,
-        message: '대분류가 존재하지 않습니다.',
-      });
-    }
+    if (pId === undefined) {
+      const duplicationCategory = await Category.findOne({ where: { categoryName } });
+      if (!duplicationCategory) {
+        const newCategory = await Category.create({
+          categoryName,
+          pId: null,
+        });
 
-    // 대분류 내에서만 중복 검사
-    const duplicationCategory = await Category.findOne({ where: { categoryName, pId: bigCategoryId } });
-    if (duplicationCategory) {
-      return res.status(409).json({
-        result: false,
-        message: '이미 존재하는 카테고리 이름입니다.',
-      });
-    }
+        res.status(200).json({
+          result: true,
+          data: newCategory,
+          message: `${categoryName}를 대분류 카테고리 추가에 성공했습니다.`,
+        });
+      } else {
+        return res.status(409).json({
+          result: false,
+          message: '이미 존재하는 카테고리 이름입니다.',
+        });
+      }
+    } else {
+      const duplicationCategory = await Category.findOne({ where: { categoryName, pId } });
 
-    // 소분류 등록
-    const newSmallCategory = await Category.create({ categoryName, pId: bigCategoryId });
-    res.status(200).json({
-      result: true,
-      data: newSmallCategory,
-      message: '소분류 등록이 완료되었습니다.',
-    });
+      if (!duplicationCategory) {
+        const newCategory = await Category.create({
+          categoryName,
+          pId,
+        });
+
+        res.status(200).json({
+          result: true,
+          data: newCategory,
+          message: `${categoryName}를 소분류 카테고리 추가에 성공했습니다.`,
+        });
+      } else {
+        return res.status(409).json({
+          result: false,
+          message: '이미 존재하는 카테고리 이름입니다.',
+        });
+      }
+    }
   } catch (error) {
-    return res.status(500).json({
+    res.status(500).json({
       result: false,
       message: '카테고리 저장 중 오류가 발생했습니다.',
       error,
@@ -137,7 +118,7 @@ export const getSmallCategoriesByBigCategory = async (req, res) => {
         message: '대분류가 존재하지 않습니다.',
       });
     }
-    
+
     const categories = await Category.findAll({ where: { pId: bigCategoryId } });
     res.status(200).json({
       result: true,

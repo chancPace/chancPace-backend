@@ -1,7 +1,6 @@
 import express from 'express';
 import {
-  addBigCategory,
-  addSmallCategory,
+  addCategory,
   getBigCategory,
   getSmallCategoriesByBigCategory,
   getSmallCategory,
@@ -12,8 +11,7 @@ import {
 const router = express.Router();
 
 //ANCHOR - 카데고리 등록
-router.post('/add-big-category', addBigCategory);
-router.post('/add-small-category', addSmallCategory);
+router.post('/add-category', addCategory);
 
 //ANCHOR - 카테고리 조회
 router.get('/get-big-category', getBigCategory);

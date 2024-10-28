@@ -23,7 +23,6 @@ export const verifyPayment = async (req, res) => {
     let decodeToken;
     try {
       decodeToken = jwt.verify(userToken, JWT_ACCESS_SECRET_KEY);
-      console.log('🚀 ~ confirm ~ decodeToken:', decodeToken);
     } catch (error) {
       return res.status(401).json({ result: false, message: '유효하지 않은 토큰입니다.' });
     }
