@@ -63,6 +63,28 @@ export const addCategory = async (req, res) => {
   }
 };
 
+//ANCHOR - 카테고리 조회
+export const getCategory = async (req, res) => {
+  try {
+    const categories = await Category.findAll();
+    res.status(200).json({
+      result: true,
+      data: categories,
+      message: '카테고리 조회 완료',
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '카테고리 조회 중 오류가 발생했습니다.',
+      error,
+    });
+  }
+};
+
+//ANCHOR - 카테고리 삭제
+
+//NOTE - --------
+
 // ANCHOR - 카테고리 대분류 조회
 export const getBigCategory = async (req, res) => {
   try {
