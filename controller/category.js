@@ -58,12 +58,7 @@ export const addSmallCategory = async (req, res) => {
     }
 
     // 대분류 내에서만 중복 검사
-    const duplicationCategory = await Category.findOne({
-      where: {
-        categoryName,
-        pId: bigCategoryId,
-      },
-    });
+    const duplicationCategory = await Category.findOne({ where: { categoryName, pId: bigCategoryId } });
     if (duplicationCategory) {
       return res.status(409).json({
         result: false,
@@ -116,6 +111,34 @@ export const getSmallCategory = async (req, res) => {
         pId: { [Op.ne]: null }, // null이 아닌 소분류만 조회 / Op 연산자 사용
       },
     });
+    res.status(200).json({
+      result: true,
+      data: categories,
+      message: '카테고리 조회 성공',
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '카테고리 조회 중 오류가 발생했습니다.',
+      error,
+    });
+  }
+};
+
+//ANCHOR - 대분류에 해당하는 소분류 조회
+export const getSmallCategoriesByBigCategory = async (req, res) => {
+  try {
+    const { bigCategoryId } = req.body;
+
+    const bigCategory = await Category.findOne({ where: { id: bigCategoryId } });
+    if (!bigCategory) {
+      return res.status(404).json({
+        result: false,
+        message: '대분류가 존재하지 않습니다.',
+      });
+    }
+    
+    const categories = await Category.findAll({ where: { pId: bigCategoryId } });
     res.status(200).json({
       result: true,
       data: categories,

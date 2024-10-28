@@ -3,6 +3,7 @@ import {
   addBigCategory,
   addSmallCategory,
   getBigCategory,
+  getSmallCategoriesByBigCategory,
   getSmallCategory,
   removeBigCategory,
   removeSmallCategory,
@@ -17,8 +18,7 @@ router.post('/add-small-category', addSmallCategory);
 //ANCHOR - 카테고리 조회
 router.get('/get-big-category', getBigCategory);
 router.get('/get-small-category', getSmallCategory);
-
-//FIXME - 대분류에 해당하는 소분류 조회 로직 구현하기
+router.get('/get-small-category-by-big-category', getSmallCategoriesByBigCategory);
 
 //ANCHOR - 카테고리 삭제
 router.delete('/remove-big-category', removeBigCategory);
