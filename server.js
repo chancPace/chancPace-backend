@@ -7,6 +7,7 @@ import userRouter from './router/user.js';
 import paymentRouter from './router/payment.js';
 import spaceRouter from './router/space.js';
 import categoryRouter from './router/category.js';
+import couponRouter from './router/coupon.js';
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use('/api/user', userRouter);
 app.use('/api/payment', paymentRouter);
 app.use('/api/space', spaceRouter);
 app.use('/api/category', categoryRouter);
+app.use('/api/coupon', couponRouter);
 
 db.sequelize
   // alter: true / 데이터 유지하고 구조만 업데이트

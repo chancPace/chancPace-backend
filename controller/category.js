@@ -1,4 +1,3 @@
-import { Op, where } from 'sequelize';
 import db from '../models/index.js';
 const { Category } = db;
 
@@ -14,12 +13,12 @@ export const addCategory = async (req, res) => {
       });
     }
 
-    if (pId === undefined) {
+    if (pId === null) {
       const duplicationCategory = await Category.findOne({ where: { categoryName } });
       if (!duplicationCategory) {
         const newCategory = await Category.create({
           categoryName,
-          pId: null,
+          pId,
         });
 
         res.status(200).json({

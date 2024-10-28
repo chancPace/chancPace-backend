@@ -1,13 +1,17 @@
 import express from 'express';
-import { getUserDataByToken, login, signup } from '../controller/user.js';
+import { getAllUser, getUser, login, removeUser, signup } from '../controller/user.js';
 
 const router = express.Router();
 
-// 회원가입
+//ANCHOR - 회원가입
 router.post('/signup', signup);
-// 로그인
+//ANCHOR - 로그인
 router.post('/login', login);
-// 토큰을 이용해 유저 정보 가져오기
-router.post('/verify-token-user', getUserDataByToken);
+//ANCHOR - 전체 회원 조회
+router.get('/get-all-user', getAllUser);
+//ANCHOR - 내 정보 조회
+router.get('/get-user', getUser);
+//ANCHOR - 회원정보 삭제
+router.delete('remove-user', removeUser)
 
 export default router;

@@ -1,6 +1,7 @@
 import db from '../models/index.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { where } from 'sequelize';
 
 const { User } = db;
 
@@ -40,7 +41,12 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const find = await User.findOne({ where: { email } });
+    const find = await User.findOne({
+      where: {
+        email,
+        accountStatus: 'ACTIVE',
+      },
+    });
 
     if (find) {
       const decryption = await bcrypt.compare(password, find.password);
@@ -77,47 +83,108 @@ export const login = async (req, res) => {
         res.status(401).json({ result: false, data: null, message: '비밀번호가 틀렸습니다' });
       }
     } else {
-      res.status(404).json({ result: false, data: null, message: '회원이 아닙니다.' });
+      res.status(404).json({ result: false, data: null, message: '회원이 아니거나 계정이 활성화되지 않았습니다.' });
     }
   } catch (error) {
-    res.status(500).json({ result: false, message: '서버오류' });
+    res.status(500).json({ result: false, message: '서버오류', error });
   }
 };
 
-//ANCHOR - 토큰을 이용해 유저 정보 가져오기
-export const getUserDataByToken = async (req, res) => {
+//ANCHOR - 내 정보 조회
+export const getUser = async (req, res) => {
   try {
-    const { token } = req.body;
-
+    // Bearer 토큰 추출
+    const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
-      return res.status(404).json({ result: false, message: '토큰 정보가 없습니다.' });
+      return res.status(404).json({
+        result: false,
+        message: '토큰이 존재하지 않습니다.',
+      });
     }
 
     let jwtUserInfo;
     try {
-      jwtUserInfo = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
+      jwtUserInfo = jwt.decode(token, process.env.JWT_ACCESS_SECRET);
     } catch (error) {
-      return res.status(401).json({ result: false, message: '유효하지 않은 토큰입니다.' });
-    }
-    const email = jwtUserInfo.user.email;
-    const userInfo = await User.findOne({ where: { email } });
-
-    if (!userInfo) {
-      return res.status(404).json({ result: false, message: '사용자를 찾을 수 없습니다.' });
+      return res.status(401).json({
+        result: false,
+        message: '토큰이 유효하지 않습니다.',
+      });
     }
 
-    res.status(200).json({ result: true, data: userInfo, message: '회원정보가 재발급 되었습니다.' });
+    const user = await User.findOne({ where: { email: jwtUserInfo.user.email } });
+
+    if (!user) {
+      return res.status(404).json({
+        result: true,
+        message: '유저가 존재하지 않습니다.',
+      });
+    }
+
+    res.status(200).json({
+      result: true,
+      data: user,
+      message: '유저 정보 조회에 성공했습니다.',
+    });
   } catch (error) {
-    res.status(500).json({ result: false, message: '서버오류' });
+    res.status(500).json({
+      result: false,
+      message: '서버오류',
+      error,
+    });
   }
 };
 
-//ANCHOR - 회원 조회
-//FIXME - 로직 만들어야함
-export const findUserInfo = (req, res) => {
+//ANCHOR - 전체 회원 정보 조회
+export const getAllUser = async (req, res) => {
   try {
-    const {} = req.body;
+    const allUser = await User.findAll();
+    console.log('🚀 ~ getAllUser ~ allUser:', allUser);
+    res.status(200).json({
+      result: true,
+      data: allUser,
+      message: '전체 회원 정보를 조회에 성공했습니다.',
+    });
   } catch (error) {
-    res.status(500).json({ result: false, message: '서버오류' });
+    res.status(500).json({
+      result: false,
+      message: '서버오류',
+      error,
+    });
   }
 };
+
+//ANCHOR - 회원 삭제
+export const removeUser = async (req, res) => {
+  try {
+    const { email, accountStatus } = req.body;
+
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(404).json({
+        result: false,
+        message: '해당 이메일의 사용자를 찾을 수 없습니다.',
+      });
+    }
+
+    const updated = await User.update({ accountStatus }, { where: { email } });
+    if (updated) {
+      res.status(200).json({
+        result: true,
+        message: `${user.userName}님의 상태를 ${accountStatus}로 바꿨습니다.`,
+      });
+    } else {
+      res.status(400).json({
+        result: false,
+        message: '상태 변경에 실패했습니다. 다시 시도해 주세요.',
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버오류',
+      error,
+    });
+  }
+};
+
