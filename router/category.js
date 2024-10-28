@@ -1,9 +1,27 @@
 import express from 'express';
-import { addCategory, getCategories } from '../controller/category.js';
+import {
+  addBigCategory,
+  addSmallCategory,
+  getBigCategory,
+  getSmallCategory,
+  removeBigCategory,
+  removeSmallCategory,
+} from '../controller/category.js';
 
 const router = express.Router();
 
-router.post('/add-category',addCategory);
-router.get('/get-category', getCategories);
+//ANCHOR - 카데고리 등록
+router.post('/add-big-category', addBigCategory);
+router.post('/add-small-category', addSmallCategory);
+
+//ANCHOR - 카테고리 조회
+router.get('/get-big-category', getBigCategory);
+router.get('/get-small-category', getSmallCategory);
+
+//FIXME - 대분류에 해당하는 소분류 조회 로직 구현하기
+
+//ANCHOR - 카테고리 삭제
+router.delete('/remove-big-category', removeBigCategory);
+router.delete('/remove-small-category', removeSmallCategory);
 
 export default router;
