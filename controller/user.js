@@ -154,12 +154,12 @@ export const getAllUser = async (req, res) => {
   }
 };
 
-//ANCHOR - 회원 삭제
+//ANCHOR - 회원 탈퇴
 export const removeUser = async (req, res) => {
   try {
-    const { email, accountStatus } = req.body;
+    const { id, accountStatus } = req.body;
 
-    const user = await User.findOne({ where: { email } });
+    const user = await User.findOne({ where: { id } });
     if (!user) {
       return res.status(404).json({
         result: false,
@@ -167,11 +167,11 @@ export const removeUser = async (req, res) => {
       });
     }
 
-    const updated = await User.update({ accountStatus }, { where: { email } });
+    const updated = await User.update({ accountStatus }, { where: { id } });
     if (updated) {
       res.status(200).json({
         result: true,
-        message: `${user.userName}님의 상태를 ${accountStatus}로 바꿨습니다.`,
+        message: `${user.email}님의 상태를 ${accountStatus}로 바꿨습니다.`,
       });
     } else {
       res.status(400).json({
@@ -187,4 +187,3 @@ export const removeUser = async (req, res) => {
     });
   }
 };
-

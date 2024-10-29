@@ -10,8 +10,8 @@ router.post('/login', login);
 //ANCHOR - 전체 회원 조회
 router.get('/get-all-user', getAllUser);
 //ANCHOR - 내 정보 조회
-router.get('/get-user', getUser);
-//ANCHOR - 회원정보 삭제
-router.delete('remove-user', removeUser)
+router.post('/get-user', getUser);
+//ANCHOR - 회원 탈퇴
+router.patch('/remove-user', removeUser)
 
 export default router;

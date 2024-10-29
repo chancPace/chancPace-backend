@@ -33,6 +33,11 @@ const SpaceModel = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    // 인원 추가 금액
+    addPrice: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    },
     // 편의 시설
     amenities: {
       type: DataTypes.STRING,
@@ -68,10 +73,12 @@ const SpaceModel = (sequelize) => {
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    // 영업 시작 시간
     businessStartTime: {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    // 영업 종료 시간
     businessEndTime: {
       type: DataTypes.STRING,
       allowNull: false,

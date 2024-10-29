@@ -35,6 +35,7 @@ export const addNewSpace = async (req, res) => {
       description, // 공간 설명
       spacePrice, // 공간 가격
       discount, // 할인 가격
+      addPrice, // 인원 추가 금액
       amenities, // 편의 시설
       cleanTime, // 청소 시간
       spaceStatus, // 공간 상태 (예약 가능 : 예약 불가능)
@@ -117,6 +118,7 @@ export const addNewSpace = async (req, res) => {
         description,
         spacePrice,
         discount,
+        addPrice,
         amenities,
         cleanTime,
         spaceStatus,
