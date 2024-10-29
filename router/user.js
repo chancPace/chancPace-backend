@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllUser, getUser, login, removeUser, signup } from '../controller/user.js';
+import { checkPassword, getAllUser, getUser, login, signup, updateMyProfile, updateUser } from '../controller/user.js';
 
 const router = express.Router();
 
@@ -11,7 +11,11 @@ router.post('/login', login);
 router.get('/get-all-user', getAllUser);
 //ANCHOR - 내 정보 조회
 router.post('/get-user', getUser);
-//ANCHOR - 회원 탈퇴
-router.patch('/remove-user', removeUser)
+//ANCHOR - 회원 정보 수정
+router.patch('/update-user', updateUser);
+//ANCHOR - 내 정보 수정 이전 비밀번호 확인
+router.post('/check-password', checkPassword);
+//ANCHOR - 내 정보 수정
+router.patch('/update-my-profile', updateMyProfile);
 
 export default router;
