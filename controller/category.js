@@ -1,6 +1,7 @@
 import db from '../models/index.js';
 const { Category } = db;
 
+//FIXME - 대분류가 존재 하지 않는다면 소분류로 넣지 못하게 막아야함
 //ANCHOR - 카테고리 추가
 export const addCategory = async (req, res) => {
   try {
@@ -86,6 +87,7 @@ export const removeCategory = async (req, res) => {
     const { id } = req.body;
     // 삭제할 카테고리 조회
     const getCategory = await Category.findOne({ where: { id } });
+    console.log('🚀 ~ removeCategory ~ getCategory:', getCategory);
 
     // 카테고리가 존재하지 않는 경우
     if (!getCategory) {
@@ -103,14 +105,14 @@ export const removeCategory = async (req, res) => {
       await Category.destroy({ where: { id: getCategory.id } });
       res.status(200).json({
         result: true,
-        message: '대분류 및 하위 소분류를 삭제 완료했습니다.',
+        message: `대분류인 "${getCategory.categoryName}" 및 하위 소분류를 삭제 완료했습니다.`,
       });
     } else {
       // 소분류인 경우
       await Category.destroy({ where: { id: getCategory.id } });
       res.status(200).json({
         result: true,
-        message: '소분류 카테고리를 삭제 완료했습니다.',
+        message: `소분류인 "${getCategory.categoryName}" 카테고리를 삭제 완료했습니다.`,
       });
     }
   } catch (error) {

@@ -206,7 +206,7 @@ export const updateUser = async (req, res) => {
     res.status(200).json({
       result: true,
       data: updated,
-      message: `${updatedData.email}님의 정보를 성공적으로 업데이트했습니다.`,
+      message: `${user.email}님의 정보를 성공적으로 업데이트했습니다.`,
     });
   } catch (error) {
     res.status(500).json({
@@ -297,7 +297,7 @@ export const updateMyProfile = async (req, res) => {
     const updated = await updateUserData(id, updatedData);
     res.status(200).json({
       result: true,
-      message: `${email}님의 정보가 업데이트 되었습니다.`,
+      message: `${user.email}님의 정보가 업데이트 되었습니다.`,
     });
   } catch (error) {
     res.status(500).json({

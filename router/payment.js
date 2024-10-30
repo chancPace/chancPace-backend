@@ -3,7 +3,7 @@ import { listUserPayments, verifyPayment } from '../controller/payment.js';
 
 const router = express.Router();
 
-router.post('/verifyPayment', verifyPayment);
-router.post('/listUserPayments', listUserPayments);
+router.post('/verify-payment', verifyPayment);
+router.post('/list-user-payments', listUserPayments);
 
 export default router;

@@ -19,7 +19,7 @@ if (!TOSS_SECRET_KEY || !JWT_ACCESS_SECRET_KEY) {
 export const verifyPayment = async (req, res) => {
   try {
     const { paymentKey, orderId, amount, userToken } = req.body;
-
+    //FIXME - 토큰 헤더로 받아야함
     let decodeToken;
     try {
       decodeToken = jwt.verify(userToken, JWT_ACCESS_SECRET_KEY);
@@ -101,6 +101,7 @@ export const listUserPayments = async (req, res) => {
     const userID = user.id;
     const payment = await Payment.findAll({ where: { userID } });
 
+    //REVIEW - 빈 배열일 때 if문 사용 법
     if (payment.length === 0) {
       return res.status(200).json({
         result: true,
