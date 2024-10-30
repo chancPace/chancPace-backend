@@ -105,7 +105,6 @@ export const removeCategory = async (req, res) => {
         result: true,
         message: '대분류 및 하위 소분류를 삭제 완료했습니다.',
       });
-
     } else {
       // 소분류인 경우
       await Category.destroy({ where: { id: getCategory.id } });
@@ -113,7 +112,6 @@ export const removeCategory = async (req, res) => {
         result: true,
         message: '소분류 카테고리를 삭제 완료했습니다.',
       });
-
     }
   } catch (error) {
     res.status(500).json({

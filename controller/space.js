@@ -170,15 +170,46 @@ export const addNewSpace = async (req, res) => {
 //ANCHOR - 이미지업로드
 export const uploadSpaceImage = upload.array('image', 10);
 
-//ANCHOR - 등록된 공간 조회
+//ANCHOR - 등록된 공간 최신순 조회
 export const getSpace = async (req, res) => {
   try {
-    const spaces = await Space.findAll();
+    const spaces = await Space.findAll({
+      order: [['createdAt', 'DESC']],
+    });
+    res.status(200).json({
+      result: true,
+      data: spaces,
+      message: '등록된 공간을 최신순으로 정렬했습니다.',
+    });
   } catch (error) {
     return res.status(400).json({
       result: false,
       message: '공간 조회 실패하였습니다.',
-      error,
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 카테고리별 공간 조회
+export const getSpaceByCategory = async (req, res) => {
+  try {
+    const { categoryId } = req.body;
+    const spaces = await Space.findAll({
+      order: [['createdAt', 'DESC']],
+      where: {
+        categoryId,
+      },
+    });
+    res.status(200).json({
+      result: true,
+      data: spaces,
+      message: '카테고리에 속한 공간 조회에 성공했습니다.',
+    });
+  } catch (error) {
+    return res.status(400).json({
+      result: false,
+      message: '공간 조회 실패하였습니다.',
+      error: message,
     });
   }
 };

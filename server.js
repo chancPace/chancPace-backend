@@ -8,6 +8,7 @@ import paymentRouter from './router/payment.js';
 import spaceRouter from './router/space.js';
 import categoryRouter from './router/category.js';
 import couponRouter from './router/coupon.js';
+import bookingRouter from './router/booking.js';
 
 dotenv.config();
 
@@ -27,11 +28,12 @@ app.use('/api/payment', paymentRouter);
 app.use('/api/space', spaceRouter);
 app.use('/api/category', categoryRouter);
 app.use('/api/coupon', couponRouter);
+app.use('/api/booking', bookingRouter);
 
 db.sequelize
   // alter: true / 데이터 유지하고 구조만 업데이트
   // force: true / 데이터 초기화 하고 구조 업데이트
-  .sync({ force: false })
+  .sync({ force: true })
   .then(() => {
     console.log('데이터베이스와 모델 동기화 완료');
     app.listen(PORT, () => {

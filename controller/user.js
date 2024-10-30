@@ -297,7 +297,6 @@ export const updateMyProfile = async (req, res) => {
     const updated = await updateUserData(id, updatedData);
     res.status(200).json({
       result: true,
-      data: updated,
       message: `${email}님의 정보가 업데이트 되었습니다.`,
     });
   } catch (error) {

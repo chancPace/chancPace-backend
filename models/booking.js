@@ -10,23 +10,24 @@ const BookingModel = (sequelize) => {
     },
     // 예약일
     startDate: {
-      type: DataTypes.DATE,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     // 시작 시간
     startTime: {
-      type: DataTypes.TIME,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     // 종료 시간
     endTime: {
-      type: DataTypes.TIME,
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     // 예약 상태
-    BookingStatus: {
+    bookingStatus: {
       type: DataTypes.ENUM('PENDING', 'APPROVED', 'CANCELLED', 'COMPLETED'),
       allowNull: false,
+      defaultValue: 'PENDING',
     },
     // 유저 ID
     userId: {
@@ -47,7 +48,7 @@ const BookingModel = (sequelize) => {
       },
     },
   });
-  
+
   // 관계 설정
   Booking.associate = (db) => {
     // Booking : User (N:1)
