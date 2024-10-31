@@ -39,8 +39,18 @@ const UserModel = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    // 호스트 계좌
-    hostBankAccount: {
+    // 호스트 계좌 - 은행
+    bankAccountName: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    // 호스트 계좌 - 번호
+    bankAccountNumber: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    // 호스트 계좌 - 통장주
+    bankAccountOwner: {
       type: DataTypes.STRING,
       allowNull: true,
     },
