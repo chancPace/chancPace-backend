@@ -1,4 +1,5 @@
 import { DataTypes } from 'sequelize';
+import { PaymentStatuses } from '../config/enum.js';
 
 const PaymentModel = (sequelize) => {
   const Payment = sequelize.define('Payment', {
@@ -26,7 +27,12 @@ const PaymentModel = (sequelize) => {
     },
     // 결제 상태
     paymentStatus: {
-      type: DataTypes.ENUM('COMPLETED', 'PENDING', 'FAILED', 'REFUNDED'), // 상태 필드
+      type: DataTypes.ENUM(
+        PaymentStatuses.COMPLETED,
+        PaymentStatuses.PENDING,
+        PaymentStatuses.FAILED,
+        PaymentStatuses.REFUNDED
+      ),
       allowNull: false,
     },
     // 결제 수단

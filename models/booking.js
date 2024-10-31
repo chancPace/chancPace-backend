@@ -1,4 +1,5 @@
 import { DataTypes } from 'sequelize';
+import { BookingStatuses } from '../config/enum.js';
 
 const BookingModel = (sequelize) => {
   const Booking = sequelize.define('Booking', {
@@ -25,9 +26,14 @@ const BookingModel = (sequelize) => {
     },
     // 예약 상태
     bookingStatus: {
-      type: DataTypes.ENUM('PENDING', 'APPROVED', 'CANCELLED', 'COMPLETED'),
+      type: DataTypes.ENUM(
+        BookingStatuses.PENDING,
+        BookingStatuses.APPROVED,
+        BookingStatuses.CANCELLED,
+        BookingStatuses.COMPLETED
+      ),
       allowNull: false,
-      defaultValue: 'PENDING',
+      defaultValue: BookingStatuses.PENDING,
     },
     // 유저 ID
     userId: {

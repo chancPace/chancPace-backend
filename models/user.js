@@ -1,4 +1,5 @@
 import { DataTypes } from 'sequelize';
+import { UserRoles, AccountStatuses, Genders } from '../config/enum.js';
 
 const UserModel = (sequelize) => {
   const User = sequelize.define('User', {
@@ -15,7 +16,7 @@ const UserModel = (sequelize) => {
     },
     // 유저 성별
     gender: {
-      type: DataTypes.ENUM('MALE', 'FEMALE'),
+      type: DataTypes.ENUM(Genders.MALE, Genders.FEMALE),
       allowNull: true,
     },
     // 이메일
@@ -61,14 +62,14 @@ const UserModel = (sequelize) => {
     },
     // 계정 권한
     role: {
-      type: DataTypes.ENUM('USER', 'HOST', 'ADMIN'),
+      type: DataTypes.ENUM(UserRoles.USER, UserRoles.HOST, UserRoles.ADMIN),
       allowNull: false,
     },
     // 계정 상태
     accountStatus: {
-      type: DataTypes.ENUM('ACTIVE', 'BLACKLISTED', 'WITHDRAWN'),
+      type: DataTypes.ENUM(AccountStatuses.ACTIVE, AccountStatuses.BLACKLISTED, AccountStatuses.WITHDRAWN),
       allowNull: false,
-      defaultValue: 'ACTIVE',
+      defaultValue: AccountStatuses.ACTIVE,
     },
     // 마케팅 약관 동의
     isMarketingAgreed: {

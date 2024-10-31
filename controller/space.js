@@ -1,6 +1,7 @@
 import db from '../models/index.js';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
+import { UserRoles } from '../config/enum.js';
 
 const storage = multer.diskStorage({
   destination: (req, res, cb) => {
@@ -79,7 +80,7 @@ export const addNewSpace = async (req, res) => {
     // 유저 계정 권한 확인
     //NOTE - //*******일단 유저도 등록가능하게 수정해놓음********* */
     const userRole = user.role;
-    if (userRole !== 'USER' && userRole !== 'ADMIN') {
+    if (userRole !== UserRoles.USER && userRole !== UserRoles.ADMIN) {
       return res.status(403).json({
         result: false,
         message: '호스트만 공간등록이 가능합니다.',

@@ -2,6 +2,7 @@ import db from '../models/index.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
+import { AccountStatuses } from '../config/enum.js';
 
 const { User } = db;
 
@@ -61,7 +62,7 @@ export const login = async (req, res) => {
     const find = await User.findOne({
       where: {
         email,
-        accountStatus: 'ACTIVE',
+        accountStatus: AccountStatuses.ACTIVE,
       },
     });
 

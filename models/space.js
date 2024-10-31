@@ -1,4 +1,5 @@
 import { DataTypes } from 'sequelize';
+import { SpaceStatuses } from '../config/enum.js';
 
 const SpaceModel = (sequelize) => {
   const Space = sequelize.define('Space', {
@@ -36,7 +37,7 @@ const SpaceModel = (sequelize) => {
     // 인원 추가 금액
     addPrice: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: true,
     },
     // 편의 시설
     amenities: {
@@ -50,7 +51,7 @@ const SpaceModel = (sequelize) => {
     },
     // 공간 상태
     spaceStatus: {
-      type: DataTypes.ENUM('AVAILABLE', 'UNAVAILABLE'),
+      type: DataTypes.ENUM(SpaceStatuses.AVAILABLE, SpaceStatuses.UNAVAILABLE),
       allowNull: false,
     },
     // 오픈 상태

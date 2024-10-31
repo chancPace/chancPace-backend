@@ -1,5 +1,6 @@
-import { where } from 'sequelize';
 import db from '../models/index.js';
+import { BookingStatuses } from '../config/enum.js';
+
 const { Booking, User, Space } = db;
 
 //ANCHOR - 예약
@@ -112,7 +113,7 @@ export const getBookingBySpace = async (req, res) => {
       where: {
         spaceId,
         startDate,
-        bookingStatus: 'COMPLETED',
+        bookingStatus: BookingStatuses.COMPLETED,
       },
       attributes: ['startTime', 'endTime'],
     });
@@ -136,7 +137,7 @@ export const cancelBooking = async (req, res) => {
   try {
     const { bookingId } = req.body;
     const updatedBooking = await Booking.update(
-      { bookingStatus: 'CANCELLED' },
+      { bookingStatus: BookingStatuses.CANCELLED },
       {
         where: {
           id: bookingId,
