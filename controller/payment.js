@@ -18,17 +18,25 @@ if (!TOSS_SECRET_KEY || !JWT_ACCESS_SECRET_KEY) {
 //ANCHOR - 결제 확인 및 처리
 export const verifyPayment = async (req, res) => {
   try {
-    const { paymentKey, orderId, amount, userToken } = req.body;
-    //FIXME - 토큰 헤더로 받아야함
-    let decodeToken;
+    const { paymentKey, orderId, amount } = req.body;
+    // Bearer 토큰 추출
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(404).json({
+        result: false,
+        message: '토큰이 존재하지 않습니다.',
+      });
+    }
+
+    let jwtUserInfo;
     try {
-      decodeToken = jwt.verify(userToken, JWT_ACCESS_SECRET_KEY);
+      jwtUserInfo = jwt.verify(token, JWT_ACCESS_SECRET_KEY);
     } catch (error) {
       return res.status(401).json({ result: false, message: '유효하지 않은 토큰입니다.' });
     }
 
-    const { email } = decodeToken.user;
-    const user = await User.findOne({ where: { email } });
+    // const { email } = jwtUserInfo.user;
+    const user = await User.findOne({ where: { email: jwtUserInfo.user.email } });
 
     if (!user) {
       return res.status(404).json({ result: false, message: '사용자를 찾을 수 없습니다.' });
