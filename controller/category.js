@@ -1,7 +1,6 @@
 import db from '../models/index.js';
 const { Category } = db;
 
-//FIXME - 대분류가 존재 하지 않는다면 소분류로 넣지 못하게 막아야함
 //ANCHOR - 카테고리 추가
 export const addCategory = async (req, res) => {
   try {
@@ -15,6 +14,7 @@ export const addCategory = async (req, res) => {
     }
 
     if (pId === null) {
+      // 동일한 카테고리 이름이 있는지 검사
       const duplicationCategory = await Category.findOne({ where: { categoryName } });
       if (!duplicationCategory) {
         const newCategory = await Category.create({
@@ -34,8 +34,17 @@ export const addCategory = async (req, res) => {
         });
       }
     } else {
-      const duplicationCategory = await Category.findOne({ where: { categoryName, pId } });
+      // 대분류가 존재하는지 검사
+      const parentCategory = await Category.findOne({ where: { id: pId, pId: null } });
+      if (!parentCategory) {
+        return res.status(400).json({
+          result: false,
+          message: '해당 대분류가 존재하지 않아 소분류로 추가할 수 없습니다.',
+        });
+      }
 
+      // 동일한 카테고리 이름이 있는지 검사
+      const duplicationCategory = await Category.findOne({ where: { categoryName, pId } });
       if (!duplicationCategory) {
         const newCategory = await Category.create({
           categoryName,
@@ -87,8 +96,6 @@ export const removeCategory = async (req, res) => {
     const { id } = req.body;
     // 삭제할 카테고리 조회
     const getCategory = await Category.findOne({ where: { id } });
-    console.log('🚀 ~ removeCategory ~ getCategory:', getCategory);
-
     // 카테고리가 존재하지 않는 경우
     if (!getCategory) {
       return res.status(404).json({
