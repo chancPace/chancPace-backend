@@ -35,3 +35,9 @@ export const BookingStatuses = {
   CANCELLED: 'CANCELLED',
   COMPLETED: 'COMPLETED',
 };
+
+//ANCHOR - Review
+export const ReviewStatus = {
+  AVAILABLE: 'AVAILABLE',
+  UNAVAILABLE: 'UNAVAILABLE',
+}

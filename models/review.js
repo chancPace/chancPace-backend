@@ -1,4 +1,5 @@
 import { DataTypes } from 'sequelize';
+import { ReviewStatus } from '../config/enum.js';
 
 const ReviewModel = (sequelize) => {
   const Review = sequelize.define('Review', {
@@ -12,6 +13,17 @@ const ReviewModel = (sequelize) => {
     reviewComment: {
       type: DataTypes.TEXT,
       allowNull: false,
+    },
+    // 리뷰 별점
+    reviewRating: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
+    // 리뷰 상태
+    reviewStatus: {
+      type: DataTypes.ENUM(ReviewStatus.AVAILABLE, ReviewStatus.UNAVAILABLE),
+      allowNull: false,
+      defaultValue: ReviewStatus.AVAILABLE,
     },
     // 공간 ID
     spaceId: {

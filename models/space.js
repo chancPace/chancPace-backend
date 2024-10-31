@@ -84,6 +84,16 @@ const SpaceModel = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    // 공간 별점 / 별점 총점
+    spaceRating: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      // 별점은 1~5 사이 값으로 제한
+      validate: {
+        min: 1,
+        max: 5,
+      },
+    },
     // 카테고리 ID
     categoryId: {
       type: DataTypes.INTEGER,
