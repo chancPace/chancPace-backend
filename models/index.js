@@ -10,6 +10,7 @@ import BookingModel from './booking.js';
 import CouponModel from './coupon.js';
 import TagModel from './tag.js';
 import ImageModel from './image.js';
+import UserCouponModel from './userCoupon.js';
 
 const env = process.env.NODE_ENV || 'development';
 const config = configFile[env];
@@ -35,6 +36,8 @@ db.Coupon = CouponModel(sequelize);
 db.Payment = PaymentModel(sequelize);
 // 이미지 모델
 db.Image = ImageModel(sequelize);
+// UserCoupon 중간 테이블 모델 추가
+db.UserCoupon = UserCouponModel(sequelize);
 
 // 관계 설정
 Object.keys(db).forEach((modelName) => {

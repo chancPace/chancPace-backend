@@ -1,5 +1,14 @@
 import express from 'express';
-import { checkPassword, getAllUser, getUser, login, signup, updateMyProfile, updateUser } from '../controller/user.js';
+import {
+  checkPassword,
+  getAllUser,
+  getOneUser,
+  getUser,
+  login,
+  signup,
+  updateMyProfile,
+  updateUser,
+} from '../controller/user.js';
 
 const router = express.Router();
 
@@ -17,5 +26,7 @@ router.patch('/update-user', updateUser);
 router.post('/check-password', checkPassword);
 //ANCHOR - 내 정보 수정
 router.patch('/update-my-profile', updateMyProfile);
+//ANCHOR - 유저 정보 조회 / 관리자
+router.get('/get-one-user', getOneUser);
 
 export default router;

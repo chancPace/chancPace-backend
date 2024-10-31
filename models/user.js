@@ -88,6 +88,12 @@ const UserModel = (sequelize) => {
     User.hasMany(db.Payment, { foreignKey: 'userId', sourceKey: 'id' });
     // User : Space (1:N)
     User.hasMany(db.Space, { foreignKey: 'userId', sourceKey: 'id' });
+    // User : Coupon (M:N)
+    User.belongsToMany(db.Coupon, {
+      through: db.UserCoupon,
+      foreignKey: 'userId',
+      otherKey: 'couponId',
+    });
   };
 
   return User;

@@ -6,25 +6,20 @@ const { Coupon, User } = db;
 //ANCHOR - 쿠폰 생성
 export const addCoupon = async (req, res) => {
   try {
-    const { discountPrice, expirationDate } = req.body;
-
-    // expirationDate가 undefined이면 기본값(발급일 기준 30일 후)을 설정
-    const expiryDate = expirationDate ? new Date(expirationDate) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    const { couponName, discountPrice } = req.body;
 
     // crypto를 사용하여 쿠폰 코드 생성
     const newCouponCode = `COUPON_${Date.now().toString()}_${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
 
     const newCoupon = await Coupon.create({
+      // 쿠폰 이름
+      couponName,
       // 쿠폰 코드
       couponCode: newCouponCode,
       // 할인금액
       discountPrice,
-      // 쿠폰 만료일
-      expirationDate: expiryDate,
       // 쿠폰 활성 상태
       isActive: true,
-      // 쿠폰 사용 여부
-      isUsed: false,
     });
 
     res.status(200).json({
@@ -36,7 +31,22 @@ export const addCoupon = async (req, res) => {
     res.status(500).json({
       result: false,
       message: '서버 에러',
-      error,
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 쿠폰 수정 및 삭제
+export const updateCoupon = async (req, res) => {
+  try {
+    const { couponId, couponName, couponCode, discountPrice, isActive } = req.body;
+    //FIXME - 쿠폰 수정 로직 구현
+    const couponData = await Coupon.update({});
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버 에러',
+      error: error.message,
     });
   }
 };

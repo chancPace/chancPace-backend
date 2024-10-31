@@ -76,12 +76,12 @@ const SpaceModel = (sequelize) => {
     },
     // 영업 시작 시간
     businessStartTime: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     // 영업 종료 시간
     businessEndTime: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     // 카테고리 ID

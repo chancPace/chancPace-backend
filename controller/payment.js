@@ -2,6 +2,7 @@ import axios from 'axios';
 import db from '../models/index.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { PaymentStatuses } from '../config/enum.js';
 
 dotenv.config();
 
@@ -35,7 +36,6 @@ export const verifyPayment = async (req, res) => {
       return res.status(401).json({ result: false, message: '유효하지 않은 토큰입니다.' });
     }
 
-    // const { email } = jwtUserInfo.user;
     const user = await User.findOne({ where: { email: jwtUserInfo.user.email } });
 
     if (!user) {
@@ -71,7 +71,7 @@ export const verifyPayment = async (req, res) => {
       paymentKey: paymentKey,
       orderId: orderId,
       paymentPrice: amount,
-      paymentStatus: 'COMPLETED',
+      paymentStatus: PaymentStatuses.COMPLETED,
       paymentMethod: response.data.method || 'UNKNOWN',
       userId: user.id,
     };
@@ -106,8 +106,7 @@ export const listUserPayments = async (req, res) => {
       return res.status(404).json({ result: false, message: '사용자를 찾을 수 없습니다.' });
     }
 
-    const userID = user.id;
-    const payment = await Payment.findAll({ where: { userID } });
+    const payment = await Payment.findAll({ where: { userId: user.id } });
 
     //REVIEW - 빈 배열일 때 if문 사용 법
     if (payment.length === 0) {
@@ -125,6 +124,39 @@ export const listUserPayments = async (req, res) => {
     });
   } catch (error) {
     console.error('error', error);
-    res.status(500).json({ result: false, message: '서버오류' });
+    res.status(500).json({
+      result: false,
+      message: '서버오류',
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 결제 취소
+export const Refund = async (req, res) => {
+  try {
+    const { paymentKey, cancelReason } = req.body;
+    const url = `https://api.tosspayments.com/v1/payments/${paymentKey}/cancel`;
+    const options = {
+      headers: {
+        Authorization: `Basic ${Buffer.from(TOSS_SECRET_KEY + ':').toString('base64')}`,
+        'Content-Type': 'application/json',
+      },
+    };
+    const data = {
+      cancelReason,
+    };
+    const response = await axios.post(url, data, options);
+    res.status(200).json({
+      result: true,
+      data: response.data,
+      message: '결제가 성공적으로 취소되었습니다.',
+    });
+  } catch (error) {
+    return res.status(500).json({
+      result: false,
+      message: '결제 취소 요청에 실패했습니다.',
+      error: error.message,
+    });
   }
 };

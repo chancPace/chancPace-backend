@@ -335,3 +335,31 @@ export const updateMyProfile = async (req, res) => {
     });
   }
 };
+
+export const getOneUser = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const find = await User.findOne({
+      where: {
+        id: userId,
+      },
+    });
+    if (!find) {
+      return res.status(404).json({
+        result: false,
+        message: '회원이 존재하지 않습니다.',
+      });
+    }
+    res.status(200).json({
+      result: true,
+      data: find,
+      message:`${find.userName}님의 정보를 가져왔습니다`
+    })
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버오류',
+      error: error.message,
+    });
+  }
+};

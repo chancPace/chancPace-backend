@@ -164,7 +164,7 @@ export const addNewSpace = async (req, res) => {
       });
     }
 
-    res.status(500).json({ result: false, message: '서버오류' });
+    res.status(500).json({ result: false, message: '서버오류', error: error.message });
   }
 };
 
