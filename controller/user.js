@@ -1,7 +1,7 @@
 import db from '../models/index.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { where } from 'sequelize';
+import crypto from 'crypto';
 
 const { User } = db;
 
@@ -41,6 +41,7 @@ export const signup = async (req, res) => {
 
     const encryption = await bcrypt.hash(password, 10);
     await User.create({
+      userName: `USER-${crypto.randomBytes(6).toString('hex')}`,
       email,
       password: encryption,
       role,

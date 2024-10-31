@@ -1,5 +1,5 @@
 import express from 'express';
-import { addBooking, getBooking, getBookingBySpace } from '../controller/booking.js';
+import { addBooking, cancelBooking, getBooking, getBookingBySpace } from '../controller/booking.js';
 
 const router = express.Router();
 
@@ -9,5 +9,7 @@ router.post('/add-booking', addBooking);
 router.get('/get-booking', getBooking);
 //ANCHOR - 해당하는 공간 예약 조회
 router.get('/get-booking-by-space', getBookingBySpace);
+//ANCHOR - 예약 취소
+router.patch('/cancel-booking', cancelBooking);
 
 export default router;

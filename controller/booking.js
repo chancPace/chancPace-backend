@@ -1,3 +1,4 @@
+import { where } from 'sequelize';
 import db from '../models/index.js';
 const { Booking, User, Space } = db;
 
@@ -11,7 +12,6 @@ export const addBooking = async (req, res) => {
       // 공간 존재 조회
       const space = await Space.findOne({ where: { id: spaceId, spaceStatus: 'AVAILABLE' } });
       if (space) {
-        
         // 겹치는 예약 시간이 존재 하는지 조회
         // const checkBooking = await Booking.findOne({
         //   where: {
@@ -112,6 +112,7 @@ export const getBookingBySpace = async (req, res) => {
       where: {
         spaceId,
         startDate,
+        bookingStatus: 'COMPLETED',
       },
       attributes: ['startTime', 'endTime'],
     });
@@ -120,6 +121,34 @@ export const getBookingBySpace = async (req, res) => {
       result: true,
       data: bookingData,
       message: '공간에 해당하는 예약 조회 성공',
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버 오류',
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 예약 취소
+export const cancelBooking = async (req, res) => {
+  try {
+    const { bookingId } = req.body;
+    const updatedBooking = await Booking.update(
+      { bookingStatus: 'CANCELLED' },
+      {
+        where: {
+          id: bookingId,
+        },
+      }
+    );
+    console.log('🚀 ~ cancelBooking ~ cancelBookingData:', updatedBooking);
+
+    
+    res.status(200).json({
+      result: true,
+      message: `${updatedBooking}의 예약의 상태를 취소로 변경했습니다.`,
     });
   } catch (error) {
     res.status(500).json({
