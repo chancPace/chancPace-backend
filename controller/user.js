@@ -70,17 +70,17 @@ export const login = async (req, res) => {
       const decryption = await bcrypt.compare(password, find.password);
 
       if (decryption) {
+        // 현재 접속시간 / 한국 기준
+        const korLogin = new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
+        await User.update({ lastLogin: korLogin }, { where: { email } });
+
         const userInfo = {
           id: find.id,
           email: find.email,
           userName: find.userName,
           role: find.role,
-          lastLogin: find.lastLogin,
+          lastLogin: korLogin,
         };
-
-        // 현재 접속시간 / 한국 기준
-        const korLogin = new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
-        await User.update({ lastLogin: korLogin }, { where: { email } });
 
         const jwtToken = {
           id: find.id,
@@ -112,7 +112,7 @@ export const login = async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).json({ result: false, message: '서버오류', error });
+    res.status(500).json({ result: false, message: '서버오류', error: error.message });
   }
 };
 
@@ -156,7 +156,7 @@ export const getUser = async (req, res) => {
     res.status(500).json({
       result: false,
       message: '서버오류',
-      error,
+      error: error.message,
     });
   }
 };
@@ -174,7 +174,7 @@ export const getAllUser = async (req, res) => {
     res.status(500).json({
       result: false,
       message: '서버오류',
-      error,
+      error: error.message,
     });
   }
 };
@@ -353,8 +353,8 @@ export const getOneUser = async (req, res) => {
     res.status(200).json({
       result: true,
       data: find,
-      message:`${find.userName}님의 정보를 가져왔습니다`
-    })
+      message: `${find.userName}님의 정보를 가져왔습니다`,
+    });
   } catch (error) {
     res.status(500).json({
       result: false,
