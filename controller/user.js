@@ -181,8 +181,19 @@ export const getAllUser = async (req, res) => {
 //ANCHOR - 회원 정보 수정
 export const updateUser = async (req, res) => {
   try {
-    const { id, userName, gender, email, phoneNumber, hostBankAccount, role, accountStatus, isMarketingAgreed } =
-      req.body;
+    const {
+      id,
+      userName,
+      gender,
+      email,
+      phoneNumber,
+      bankAccountName,
+      bankAccountNumber,
+      bankAccountOwner,
+      role,
+      accountStatus,
+      isMarketingAgreed,
+    } = req.body;
 
     const user = await User.findOne({ where: { id } });
     if (!user) {
@@ -197,7 +208,9 @@ export const updateUser = async (req, res) => {
       gender,
       email,
       phoneNumber,
-      hostBankAccount,
+      bankAccountName,
+      bankAccountNumber,
+      bankAccountOwner,
       role,
       accountStatus,
       isMarketingAgreed,
@@ -273,7 +286,18 @@ export const checkPassword = async (req, res) => {
 //ANCHOR - 내 정보 업데이트
 export const updateMyProfile = async (req, res) => {
   try {
-    const { id, userName, gender, email, password, phoneNumber, hostBankAccount, isMarketingAgreed } = req.body;
+    const {
+      id,
+      userName,
+      gender,
+      email,
+      password,
+      phoneNumber,
+      bankAccountName,
+      bankAccountNumber,
+      bankAccountOwner,
+      isMarketingAgreed,
+    } = req.body;
     const user = await User.findOne({ where: { id } });
     if (!user) {
       return res.status(404).json({
@@ -287,7 +311,9 @@ export const updateMyProfile = async (req, res) => {
       email,
       password,
       phoneNumber,
-      hostBankAccount,
+      bankAccountName,
+      bankAccountNumber,
+      bankAccountOwner,
       isMarketingAgreed,
     };
 
@@ -295,7 +321,7 @@ export const updateMyProfile = async (req, res) => {
       updatedData.password = await bcrypt.hash(password, 10);
     }
 
-    const updated = await updateUserData(id, updatedData);
+    await updateUserData(id, updatedData);
     res.status(200).json({
       result: true,
       message: `${user.email}님의 정보가 업데이트 되었습니다.`,
