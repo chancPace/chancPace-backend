@@ -143,12 +143,15 @@ export const cancelBooking = async (req, res) => {
         },
       }
     );
-    console.log('🚀 ~ cancelBooking ~ cancelBookingData:', updatedBooking);
-
-    
+    if (updatedBooking === 0) {
+      return res.status(404).json({
+        result: false,
+        message: '해당 예약을 찾을 수 없습니다.',
+      });
+    }
     res.status(200).json({
       result: true,
-      message: `${updatedBooking}의 예약의 상태를 취소로 변경했습니다.`,
+      message: `예약 ID ${bookingId}의 상태를 취소로 변경했습니다.`,
     });
   } catch (error) {
     res.status(500).json({
