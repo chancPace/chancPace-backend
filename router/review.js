@@ -1,5 +1,12 @@
 import express from 'express';
-import { addReview, getAllReview, getReviewBySpace, updateRatingBySpace, updateReview } from '../controller/review.js';
+import {
+  addReview,
+  getAllReview,
+  getMyReview,
+  getReviewBySpace,
+  updateRatingBySpace,
+  updateReview,
+} from '../controller/review.js';
 
 const router = express.Router();
 
@@ -17,5 +24,8 @@ router.get('/get-review-by-space', getReviewBySpace);
 
 //ANCHOR - 리뷰 수정
 router.patch('/update-review', updateReview);
+
+//ANCHOR - 내가 작성한 리뷰 조회
+router.get('/get-my-review', getMyReview);
 
 export default router;

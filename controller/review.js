@@ -67,6 +67,7 @@ export const addReview = async (req, res) => {
     });
   }
 };
+
 //ANCHOR - 공간 별점 평균 값 구하기
 export const updateRatingBySpace = async (req, res) => {
   try {
@@ -131,7 +132,7 @@ export const getAllReview = async (req, res) => {
 //ANCHOR - 공간의 리뷰 전체 조회
 export const getReviewBySpace = async (req, res) => {
   try {
-    const { spaceId } = req.body;
+    const { spaceId } = req.query;
     const spaceReview = await Review.findAll({
       // 최신순으로
       order: [['createdAt', 'DESC']],
@@ -185,6 +186,29 @@ export const updateReview = async (req, res) => {
         message: '수정에 실패했습니다. 다시 시도하세요',
       });
     }
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버 오류',
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 내가 작성한 리뷰 조회
+export const getMyReview = async (req, res) => {
+  try {
+    const { userId } = req.query;
+    const myAllReview = await Review.findAll({
+      where: {
+        userId,
+      },
+    });
+    res.status(200).json({
+      result: true,
+      data: myAllReview,
+      message: '내가 작성한 리뷰 조회 성공'
+    })
   } catch (error) {
     res.status(500).json({
       result: false,
