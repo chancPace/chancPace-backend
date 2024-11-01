@@ -3,6 +3,7 @@ import {
   checkPassword,
   getAllUser,
   getOneUser,
+  getSearchUser,
   getUser,
   login,
   signup,
@@ -28,5 +29,7 @@ router.post('/check-password', checkPassword);
 router.patch('/update-my-profile', updateMyProfile);
 //ANCHOR - 유저 정보 조회 / 관리자
 router.get('/get-one-user', getOneUser);
+//ANCHOR - 검색 기능 / 관리자
+router.get('/get-search-user', getSearchUser);
 
 export default router;

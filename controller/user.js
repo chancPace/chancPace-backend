@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 import { AccountStatuses } from '../config/enum.js';
+import { Op } from 'sequelize';
 
 const { User } = db;
 
@@ -358,6 +359,33 @@ export const getOneUser = async (req, res) => {
       result: true,
       data: find,
       message: `${find.userName}님의 정보를 가져왔습니다`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버오류',
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 검색 기능
+export const getSearchUser = async (req, res) => {
+  try {
+    const { query } = req.body;
+    const users = await User.findAll({
+      where: {
+        [Op.or]: [
+          { userName: { [Op.like]: `%${query}%` } },
+          { email: { [Op.like]: `%${query}%` } },
+          { phoneNumber: { [Op.like]: `%${query}%x` } },
+        ],
+      },
+    });
+    res.status(200).json({
+      result: true,
+      data: users,
+      message: `${query}가 포함된 유저 목록입니다.`,
     });
   } catch (error) {
     res.status(500).json({
