@@ -210,11 +210,13 @@ export const updateUser = async (req, res) => {
       });
     }
 
+    const encryption = await bcrypt.hash(password, 10);
+
     const updatedData = {
       userName,
       gender,
       email,
-      password,
+      password: encryption,
       phoneNumber,
       bankAccountName,
       bankAccountNumber,
