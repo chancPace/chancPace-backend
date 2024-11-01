@@ -372,7 +372,7 @@ export const getOneUser = async (req, res) => {
 //ANCHOR - 검색 기능
 export const getSearchUser = async (req, res) => {
   try {
-    const { query } = req.body;
+    const { query } = req.query;
     const users = await User.findAll({
       where: {
         [Op.or]: [
