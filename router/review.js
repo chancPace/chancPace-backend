@@ -1,10 +1,13 @@
 import express from 'express';
-import { addReview, getAllReview, getReviewBySpace, updateReview } from '../controller/review.js';
+import { addReview, getAllReview, getReviewBySpace, updateRatingBySpace, updateReview } from '../controller/review.js';
 
 const router = express.Router();
 
 //ANCHOR - 리뷰 생성
 router.post('/add-review', addReview);
+
+//ANCHOR - 공간 별점 평균 값 구하기
+router.patch('/update-rating-by-space', updateRatingBySpace);
 
 //ANCHOR - 리뷰 전체 조회
 router.get('/get-all-review', getAllReview);

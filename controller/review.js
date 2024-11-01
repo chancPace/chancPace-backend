@@ -1,8 +1,9 @@
 import db from '../models/index.js';
 import jwt from 'jsonwebtoken';
 import { ReviewStatus } from '../config/enum.js';
+import { where } from 'sequelize';
 
-const { Review, User } = db;
+const { Review, User, Space } = db;
 
 //ANCHOR - 리뷰 생성
 export const addReview = async (req, res) => {
@@ -58,6 +59,48 @@ export const addReview = async (req, res) => {
         message: `현재 ${reviewRating}점입니다. 별점은 1~5 점까지만 가능합니다`,
       });
     }
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버 오류',
+      error: error.message,
+    });
+  }
+};
+//ANCHOR - 공간 별점 평균 값 구하기
+export const updateRatingBySpace = async (req, res) => {
+  try {
+    const { spaceId } = req.body;
+
+    // 리뷰의 수
+    const reviewCount = await Review.count({
+      where: { spaceId },
+    });
+    // 리뷰가 가지고 있는 각각의 별점들
+    const reviewAllRating = await Review.findAll({
+      where: { spaceId },
+      attributes: ['reviewRating'],
+    });
+
+    // 리뷰 전체의 총 별점 값
+    const totalRating = reviewAllRating.reduce((acc, review) => {
+      return acc + review.dataValues.reviewRating;
+    }, 0);
+    // 리뷰 별점 평균 값
+    const averageRating = totalRating / reviewCount;
+
+    // 별점 평균 값 공간에 업데이트
+    await Space.update(
+      { spaceRating: averageRating },
+      {
+        where: { id: spaceId },
+      }
+    );
+    res.status(200).json({
+      result: true,
+      data: averageRating,
+      message: `현재 공간의 별점 평균은 ${averageRating}점 입니다.`,
+    });
   } catch (error) {
     res.status(500).json({
       result: false,

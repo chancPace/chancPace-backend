@@ -18,6 +18,11 @@ const ReviewModel = (sequelize) => {
     reviewRating: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      // 별점은 1~5 사이 값으로 제한
+      validate: {
+        min: 1,
+        max: 5,
+      },
     },
     // 리뷰 상태
     reviewStatus: {

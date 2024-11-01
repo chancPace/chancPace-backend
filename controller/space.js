@@ -78,6 +78,7 @@ export const addNewSpace = async (req, res) => {
     }
 
     // 유저 계정 권한 확인
+    //FIXME - 이거 언제까지 유저도 가능하게 해둠...????????
     //NOTE - //*******일단 유저도 등록가능하게 수정해놓음********* */
     const userRole = user.role;
     if (userRole !== UserRoles.USER && userRole !== UserRoles.ADMIN) {
@@ -210,7 +211,30 @@ export const getSpaceByCategory = async (req, res) => {
     return res.status(400).json({
       result: false,
       message: '공간 조회 실패하였습니다.',
-      error: message,
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 공간 총 별점 조회
+export const getRatingBySpace = async (req, res) => {
+  try {
+    const { spaceId } = req.body;
+    const spaceRatingData = await Space.findOne({
+      where: { id:spaceId },
+      attributes: ['spaceName', 'spaceRating'],
+    });
+    console.log("🚀 ~ getRatingBySpace ~ spaceRatingData:", spaceRatingData)
+    res.status(200).json({
+      result: true,
+      data: spaceRatingData,
+      message: `${spaceRatingData.spaceName}의 총 별점을 조회하였습니다.`,
+    });
+  } catch (error) {
+    return res.status(400).json({
+      result: false,
+      message: '서버 오류',
+      error: error.message,
     });
   }
 };

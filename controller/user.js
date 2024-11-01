@@ -112,7 +112,11 @@ export const login = async (req, res) => {
       });
     }
   } catch (error) {
-    res.status(500).json({ result: false, message: '서버오류', error: error.message });
+    res.status(500).json({
+      result: false,
+      message: '서버오류',
+      error: error.message,
+    });
   }
 };
 
@@ -338,7 +342,7 @@ export const updateMyProfile = async (req, res) => {
 
 export const getOneUser = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const { userId } = req.query;
     const find = await User.findOne({
       where: {
         id: userId,

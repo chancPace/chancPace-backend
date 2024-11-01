@@ -107,7 +107,7 @@ export const getBooking = async (req, res) => {
 //ANCHOR - 해당하는 공간 예약 조회
 export const getBookingBySpace = async (req, res) => {
   try {
-    const { spaceId, startDate } = req.body;
+    const { spaceId, startDate } = req.query;
 
     const bookingData = await Booking.findAll({
       where: {
