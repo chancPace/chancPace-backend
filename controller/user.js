@@ -228,7 +228,7 @@ export const updateUser = async (req, res) => {
     res.status(200).json({
       result: true,
       data: updated,
-      message: `${user.email}님의 정보를 성공적으로 업데이트했습니다.`,
+      message: `${user.userName}님의 정보를 성공적으로 업데이트했습니다.`,
     });
   } catch (error) {
     res.status(500).json({
