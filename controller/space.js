@@ -1,7 +1,7 @@
 import db from '../models/index.js';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
-import { UserRoles } from '../config/enum.js';
+import { UserRoles, SpaceStatuses } from '../config/enum.js';
 
 const storage = multer.diskStorage({
   destination: (req, res, cb) => {
@@ -123,7 +123,7 @@ export const addNewSpace = async (req, res) => {
         addPrice,
         amenities,
         cleanTime,
-        spaceStatus,
+        spaceStatus: SpaceStatuses.UNAVAILABLE,
         isOpen,
         minGuests,
         maxGuests,
@@ -221,10 +221,9 @@ export const getRatingBySpace = async (req, res) => {
   try {
     const { spaceId } = req.body;
     const spaceRatingData = await Space.findOne({
-      where: { id:spaceId },
+      where: { id: spaceId },
       attributes: ['spaceName', 'spaceRating'],
     });
-    console.log("🚀 ~ getRatingBySpace ~ spaceRatingData:", spaceRatingData)
     res.status(200).json({
       result: true,
       data: spaceRatingData,
