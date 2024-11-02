@@ -1,7 +1,6 @@
 import db from '../models/index.js';
 import jwt from 'jsonwebtoken';
 import { ReviewStatus } from '../config/enum.js';
-import { where } from 'sequelize';
 
 const { Review, User, Space } = db;
 
@@ -114,7 +113,14 @@ export const updateRatingBySpace = async (req, res) => {
 //ANCHOR - 리뷰 전체 조회
 export const getAllReview = async (req, res) => {
   try {
-    const allReview = await Review.findAll();
+    const allReview = await Review.findAll({
+      include: [
+        {
+          model: User,
+          attributes: ['email'],
+        },
+      ],
+    });
     res.status(200).json({
       result: true,
       data: allReview,
@@ -133,6 +139,14 @@ export const getAllReview = async (req, res) => {
 export const getReviewBySpace = async (req, res) => {
   try {
     const { spaceId } = req.query;
+
+    if (!spaceId) {
+      return res.status(400).json({
+        result: false,
+        message: 'spaceId가 필요합니다.',
+      });
+    }
+
     const spaceReview = await Review.findAll({
       // 최신순으로
       order: [['createdAt', 'DESC']],
@@ -142,6 +156,12 @@ export const getReviewBySpace = async (req, res) => {
         // 활성화 된 리뷰만
         reviewStatus: ReviewStatus.AVAILABLE,
       },
+      include: [
+        {
+          model: User,
+          attributes: ['email'],
+        },
+      ],
     });
     res.status(200).json({
       result: true,
@@ -207,8 +227,8 @@ export const getMyReview = async (req, res) => {
     res.status(200).json({
       result: true,
       data: myAllReview,
-      message: '내가 작성한 리뷰 조회 성공'
-    })
+      message: '내가 작성한 리뷰 조회 성공',
+    });
   } catch (error) {
     res.status(500).json({
       result: false,

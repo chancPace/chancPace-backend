@@ -2,7 +2,9 @@ import db from '../models/index.js';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
 import { UserRoles, SpaceStatuses } from '../config/enum.js';
+const { User, Space, Image } = db;
 
+//ANCHOR - 이미지업로드
 const storage = multer.diskStorage({
   destination: (req, res, cb) => {
     cb(null, 'uploads/');
@@ -23,7 +25,7 @@ const upload = multer({
   },
 });
 
-const { User, Space, Image } = db;
+export const uploadSpaceImage = upload.array('image', 10);
 
 //ANCHOR - 공간 등록
 export const addNewSpace = async (req, res) => {
@@ -168,9 +170,6 @@ export const addNewSpace = async (req, res) => {
     res.status(500).json({ result: false, message: '서버오류', error: error.message });
   }
 };
-
-//ANCHOR - 이미지업로드
-export const uploadSpaceImage = upload.array('image', 10);
 
 //ANCHOR - 등록된 공간 최신순 조회
 export const getSpace = async (req, res) => {
