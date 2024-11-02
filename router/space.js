@@ -1,5 +1,13 @@
 import express from 'express';
-import { addNewSpace, getRatingBySpace, getSearchSpace, getSpace, getSpaceByCategory, uploadSpaceImage } from '../controller/space.js';
+import {
+  addNewSpace,
+  getRatingBySpace,
+  getSearchSpace,
+  getSpace,
+  getSpaceByCategory,
+  updatedSpace,
+  uploadSpaceImage,
+} from '../controller/space.js';
 
 const router = express.Router();
 
@@ -13,5 +21,7 @@ router.get('/get-space-by-category', getSpaceByCategory);
 router.get('/get-rating-by-space', getRatingBySpace);
 //ANCHOR - 검색 기능
 router.get('/get-search-space', getSearchSpace);
+//ANCHOR - 공간 수정 및 삭제
+router.patch('/updated-space', updatedSpace);
 
 export default router;
