@@ -6,7 +6,7 @@ import {
   getSearchSpace,
   getSpace,
   getSpaceByCategory,
-  updatedSpace,
+  updateSpace,
   uploadSpaceImage,
 } from '../controller/space.js';
 
@@ -23,7 +23,7 @@ router.get('/get-rating-by-space', getRatingBySpace);
 //ANCHOR - 검색 기능
 router.get('/get-search-space', getSearchSpace);
 //ANCHOR - 공간 수정 및 삭제
-router.patch('/updated-space', updatedSpace);
+router.patch('/update-space', updateSpace);
 //ANCHOR - 공간 1개 조회 / 공간 상세페이지
 router.get('/get-one-space', getOneSpace);
 

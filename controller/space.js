@@ -273,7 +273,7 @@ export const getSearchSpace = async (req, res) => {
 };
 
 //ANCHOR - 공간 수정 및 삭제
-export const updatedSpace = async (req, res) => {
+export const updateSpace = async (req, res) => {
   try {
     const {
       spaceId,
