@@ -12,7 +12,7 @@ const SpaceModel = (sequelize) => {
     // 공간 관리자 이름
     spaceAdminName: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     // 공간 관리자 연락처
     spaceAdminPhoneNumber: {

@@ -305,7 +305,7 @@ export const updatedSpace = async (req, res) => {
     if (!findSpace) {
       return res.status(404).json({
         result: false,
-        message: '존재하지 않은 공간 입니다.',
+        message: '존재하지 않는 공간 입니다.',
       });
     }
 
@@ -349,6 +349,35 @@ export const updatedSpace = async (req, res) => {
       result: true,
       data: updatedSpace,
       message: `${updatedData.spaceName}의 공간 정보가 수정되었습니다.`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버오류',
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 공간 상세 페이지 / 관리자
+export const getOneSpace = async (req, res) => {
+  try {
+    const { spaceId } = req.query;
+    const findSpace = await Space.findOne({
+      where: {
+        id: spaceId,
+      },
+    });
+    if (!findSpace) {
+      return res.status(404).json({
+        result: false,
+        message: '존재하지 않는 공간입니다.',
+      });
+    }
+    res.status(200).json({
+      result: true,
+      data: findSpace,
+      message: `${findSpace.spaceName}의 공간을 조회했습니다.`,
     });
   } catch (error) {
     res.status(500).json({

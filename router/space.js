@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   addNewSpace,
+  getOneSpace,
   getRatingBySpace,
   getSearchSpace,
   getSpace,
@@ -23,5 +24,7 @@ router.get('/get-rating-by-space', getRatingBySpace);
 router.get('/get-search-space', getSearchSpace);
 //ANCHOR - 공간 수정 및 삭제
 router.patch('/updated-space', updatedSpace);
+//ANCHOR - 공간 1개 조회 / 공간 상세페이지
+router.get('/get-one-space', getOneSpace);
 
 export default router;
