@@ -52,7 +52,7 @@ export const signup = async (req, res) => {
 
     res.status(200).json({ result: true, message: role === 'admin' ? '관리자 회원가입 성공' : '회원가입 성공' });
   } catch (error) {
-    res.status(500).json({ result: false, message: '서버오류' });
+    res.status(500).json({ result: false, message: '서버오류', error: error.message });
   }
 };
 

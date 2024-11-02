@@ -2,6 +2,7 @@ import db from '../models/index.js';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
 import { UserRoles, SpaceStatuses } from '../config/enum.js';
+import { Op } from 'sequelize';
 const { User, Space, Image } = db;
 
 //ANCHOR - 이미지업로드
@@ -232,6 +233,30 @@ export const getRatingBySpace = async (req, res) => {
     return res.status(400).json({
       result: false,
       message: '서버 오류',
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 검색 기능
+export const getSearchSpace = async (req, res) => {
+  try {
+    const { query } = req.query;
+    const spaces = await Space.findAll({
+      where: {
+        spaceStatus: SpaceStatuses.AVAILABLE,
+        [Op.or]: [{ spaceName: { [Op.like]: `%${query}%` } }, { spaceLocation: { [Op.like]: `%${query}%` } }],
+      },
+    });
+    res.status(200).json({
+      result: true,
+      data: spaces,
+      message: `${query}가 포함된 공간 목록입니다.`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버오류',
       error: error.message,
     });
   }
