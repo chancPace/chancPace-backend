@@ -9,6 +9,16 @@ const SpaceModel = (sequelize) => {
       primaryKey: true,
       autoIncrement: true,
     },
+    // 공간 관리자 이름
+    spaceAdminName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    // 공간 관리자 연락처
+    spaceAdminPhoneNumber: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     // 공간 이름
     spaceName: {
       type: DataTypes.STRING,

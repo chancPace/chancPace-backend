@@ -2,7 +2,7 @@ import db from '../models/index.js';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
 import { UserRoles, SpaceStatuses } from '../config/enum.js';
-import { Op } from 'sequelize';
+import { Op, where } from 'sequelize';
 const { User, Space, Image } = db;
 
 //ANCHOR - 이미지업로드
@@ -34,6 +34,8 @@ export const addNewSpace = async (req, res) => {
 
   try {
     const {
+      spaceAdminName, // 공간 관리자 이름
+      spaceAdminPhoneNumber, // 공간 관리자 연락처
       spaceName, // 공간 이름
       spaceLocation, // 공간 위치
       description, // 공간 설명
@@ -42,7 +44,7 @@ export const addNewSpace = async (req, res) => {
       addPrice, // 인원 추가 금액
       amenities, // 편의 시설
       cleanTime, // 청소 시간
-      spaceStatus, // 공간 상태 (예약 가능 : 예약 불가능)
+      // spaceStatus, // 공간 상태 (예약 가능 : 예약 불가능)
       isOpen, // 오픈 상태 (사용자에게 보여줄지 안보여줄지)
       minGuests, // 최소인원
       maxGuests, // 최대 인원
@@ -118,6 +120,8 @@ export const addNewSpace = async (req, res) => {
 
     const newSpace = await Space.create(
       {
+        spaceAdminName,
+        spaceAdminPhoneNumber,
         spaceName,
         spaceLocation,
         description,
@@ -246,12 +250,105 @@ export const getSearchSpace = async (req, res) => {
       where: {
         spaceStatus: SpaceStatuses.AVAILABLE,
         [Op.or]: [{ spaceName: { [Op.like]: `%${query}%` } }, { spaceLocation: { [Op.like]: `%${query}%` } }],
+        include: [
+          {
+            model: User,
+            attributes: ['userName'],
+          },
+        ],
       },
     });
     res.status(200).json({
       result: true,
       data: spaces,
       message: `${query}가 포함된 공간 목록입니다.`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버오류',
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 공간 수정 및 삭제
+export const updatedSpace = async (req, res) => {
+  try {
+    const {
+      spaceId,
+      spaceAdminName, // 공간 관리자 이름
+      spaceAdminPhoneNumber, // 공간 관리자 연락처
+      spaceName, // 공간 이름
+      spaceLocation, // 공간 위치
+      description, // 공간 설명
+      spacePrice, // 공간 가격
+      discount, // 할인 가격
+      addPrice, // 인원 추가 금액
+      amenities, // 편의 시설
+      cleanTime, // 청소 시간
+      // spaceStatus, // 공간 상태 (예약 가능 : 예약 불가능)
+      isOpen, // 오픈 상태 (사용자에게 보여줄지 안보여줄지)
+      minGuests, // 최소인원
+      maxGuests, // 최대 인원
+      guidelines, // 주의 사항
+      categoryId, //카테고리
+      businessStartTime, //영업시작시간
+      businessEndTime, //영업종료시간
+    } = req.body;
+    // 공간의 존재 여부 확인
+    const findSpace = await Space.findOne({
+      where: {
+        id: spaceId,
+      },
+    });
+    if (!findSpace) {
+      return res.status(404).json({
+        result: false,
+        message: '존재하지 않은 공간 입니다.',
+      });
+    }
+
+    // 수정할 데이터 생성
+    const updatedData = {
+      spaceAdminName, // 공간 관리자 이름
+      spaceAdminPhoneNumber, // 공간 관리자 연락처
+      spaceName, // 공간 이름
+      spaceLocation, // 공간 위치
+      description, // 공간 설명
+      spacePrice, // 공간 가격
+      discount, // 할인 가격
+      addPrice, // 인원 추가 금액
+      amenities, // 편의 시설
+      cleanTime, // 청소 시간
+      // spaceStatus, // 공간 상태 (예약 가능 : 예약 불가능)
+      isOpen, // 오픈 상태 (사용자에게 보여줄지 안보여줄지)
+      minGuests, // 최소인원
+      maxGuests, // 최대 인원
+      guidelines, // 주의 사항
+      categoryId, //카테고리
+      businessStartTime, //영업시작시간
+      businessEndTime, //영업종료시간
+    };
+
+    // 값이 없다면 키를 삭제 시킴
+    Object.keys(updatedData).forEach((key) => {
+      if (updatedData[key] === undefined || updatedData[key] === null || updatedData[key] === '') {
+        delete updatedData[key];
+      }
+    });
+
+    // db에 업데이트 내용 적용
+    const updatedSpace = await Space.update(updatedData, {
+      where: {
+        id: spaceId,
+      },
+    });
+
+    res.status(200).json({
+      result: true,
+      data: updatedSpace,
+      message: `${updatedData.spaceName}의 공간 정보가 수정되었습니다.`,
     });
   } catch (error) {
     res.status(500).json({
