@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   addNewSpace,
+  getMySpace,
   getOneSpace,
   getRatingBySpace,
   getSearchSpace,
@@ -26,5 +27,7 @@ router.get('/get-search-space', getSearchSpace);
 router.patch('/update-space', updateSpace);
 //ANCHOR - 공간 1개 조회 / 공간 상세페이지
 router.get('/get-one-space', getOneSpace);
+//ANCHOR - 내가 등록한 공간 전체 조회 & 예약목록 조회 / 호스트
+router.get('/get-my-space', getMySpace);
 
 export default router;

@@ -2,8 +2,8 @@ import db from '../models/index.js';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
 import { UserRoles, SpaceStatuses } from '../config/enum.js';
-import { Op, where } from 'sequelize';
-const { User, Space, Image } = db;
+import { Op } from 'sequelize';
+const { User, Space, Image, Booking } = db;
 
 //ANCHOR - 이미지업로드
 const storage = multer.diskStorage({
@@ -181,6 +181,7 @@ export const getSpace = async (req, res) => {
   try {
     const spaces = await Space.findAll({
       order: [['createdAt', 'DESC']],
+      include: [{ model: Image }],
     });
     res.status(200).json({
       result: true,
@@ -202,9 +203,8 @@ export const getSpaceByCategory = async (req, res) => {
     const { categoryId } = req.body;
     const spaces = await Space.findAll({
       order: [['createdAt', 'DESC']],
-      where: {
-        categoryId,
-      },
+      where: { categoryId },
+      include: [{ model: Image }],
     });
     res.status(200).json({
       result: true,
@@ -251,14 +251,8 @@ export const getSearchSpace = async (req, res) => {
         spaceStatus: SpaceStatuses.AVAILABLE,
         [Op.or]: [{ spaceName: { [Op.like]: `%${query}%` } }, { spaceLocation: { [Op.like]: `%${query}%` } }],
       },
-      include: [
-        {
-          model: User,
-          attributes: ['userName'],
-        },
-      ],
+      include: [{ model: Image }, { model: User, attributes: ['userName'] }],
     });
-    console.log("🚀 ~ getSearchSpace ~ spaces:", spaces)
     res.status(200).json({
       result: true,
       data: spaces,
@@ -275,6 +269,8 @@ export const getSearchSpace = async (req, res) => {
 
 //ANCHOR - 공간 수정 및 삭제
 export const updateSpace = async (req, res) => {
+  const t = await db.sequelize.transaction();
+
   try {
     const {
       spaceId,
@@ -296,12 +292,13 @@ export const updateSpace = async (req, res) => {
       categoryId, //카테고리
       businessStartTime, //영업시작시간
       businessEndTime, //영업종료시간
+      deleteImageIds, // 프론트엔드에서 삭제할 이미지 ID 배열로 받기
     } = req.body;
     // 공간의 존재 여부 확인
     const findSpace = await Space.findOne({
-      where: {
-        id: spaceId,
-      },
+      where: { id: spaceId },
+      include: [{ model: Image }],
+      transaction: t,
     });
     if (!findSpace) {
       return res.status(404).json({
@@ -309,6 +306,38 @@ export const updateSpace = async (req, res) => {
         message: '존재하지 않는 공간 입니다.',
       });
     }
+
+    //SECTION -  어떻게 작동하는지 해석해야함
+    // 삭제할 이미지가 있다면 처리
+    if (deleteImageIds && deleteImageIds.length > 0) {
+      // DB에서 이미지 삭제
+      await Image.destroy({
+        where: {
+          id: deleteImageIds,
+          spaceId: findSpace.id, // 해당 공간의 이미지인지 확인
+        },
+        transaction: t,
+      });
+
+      // 파일 시스템에서 이미지 삭제
+      findSpace.Images.forEach((image) => {
+        if (deleteImageIds.includes(image.id)) {
+          const imagePath = path.join(__dirname, '..', image.imageUrl);
+          if (fs.existsSync(imagePath)) {
+            fs.unlinkSync(imagePath); // 실제 이미지 파일 삭제
+          }
+        }
+      });
+    }
+
+    // 새로운 이미지가 업로드된 경우 처리
+    if (req.files && req.files.length > 0) {
+      const newImageUrls = req.files.map((file) => file.path);
+      await Promise.all(
+        newImageUrls.map((imageUrl) => Image.create({ imageUrl, spaceId: findSpace.id }, { transaction: t }))
+      );
+    }
+    //!SECTION
 
     // 수정할 데이터 생성
     const updatedData = {
@@ -341,10 +370,11 @@ export const updateSpace = async (req, res) => {
 
     // db에 업데이트 내용 적용
     const updatedSpace = await Space.update(updatedData, {
-      where: {
-        id: spaceId,
-      },
+      where: { id: spaceId },
+      transaction: t,
     });
+
+    await t.commit();
 
     res.status(200).json({
       result: true,
@@ -352,6 +382,8 @@ export const updateSpace = async (req, res) => {
       message: `${updatedData.spaceName}의 공간 정보가 수정되었습니다.`,
     });
   } catch (error) {
+    await t.rollback();
+
     res.status(500).json({
       result: false,
       message: '서버오류',
@@ -365,9 +397,8 @@ export const getOneSpace = async (req, res) => {
   try {
     const { spaceId } = req.query;
     const findSpace = await Space.findOne({
-      where: {
-        id: spaceId,
-      },
+      where: { id: spaceId },
+      include: [{ model: Image }],
     });
     if (!findSpace) {
       return res.status(404).json({
@@ -379,6 +410,34 @@ export const getOneSpace = async (req, res) => {
       result: true,
       data: findSpace,
       message: `${findSpace.spaceName}의 공간을 조회했습니다.`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버오류',
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 내가 등록한 공간 전체 조회 & 예약목록 조회 / 호스트
+export const getMySpace = async (req, res) => {
+  try {
+    const { userId } = req.query;
+    const findMySpace = await Space.findAll({
+      where: { userId },
+      include: [{ model: Booking }],
+    });
+    if (findMySpace.length === 0) {
+      return res.status(404).json({
+        result: false,
+        message: '등록한 공간이 없습니다.',
+      });
+    }
+    res.status(200).json({
+      result: true,
+      data: findMySpace,
+      message: '등록한 공간 조회에 성공했습니다.',
     });
   } catch (error) {
     res.status(500).json({
