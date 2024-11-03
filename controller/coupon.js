@@ -1,3 +1,4 @@
+import { Op } from 'sequelize';
 import db from '../models/index.js';
 import crypto from 'crypto';
 
@@ -92,7 +93,7 @@ export const getAllCoupon = async (req, res) => {
 };
 
 //ANCHOR - 관리자가 유저에게 쿠폰을 발급
-export const addUserCoupon = async (req, res) => {
+export const sendCoupon = async (req, res) => {
   try {
     const { expirationDate, userId, couponId } = req.body;
     const findUser = await User.findOne({ where: { id: userId } });
@@ -106,7 +107,7 @@ export const addUserCoupon = async (req, res) => {
     if (!findCoupon) {
       return res.status(404).json({
         result: false,
-        massage: '존재하지 않는 쿠폰입니다.',
+        message: '존재하지 않는 쿠폰입니다.',
       });
     }
     // crypto를 사용하여 쿠폰 코드 생성
@@ -114,15 +115,43 @@ export const addUserCoupon = async (req, res) => {
     const addUserCoupon = await UserCoupon.create({
       // 쿠폰 코드
       couponCode: newCouponCode,
+      // 유효 기간
       expirationDate,
-      isUsed: true,
+      // 사용 여부
+      isUsed: false,
+      // 발급 받을 유저
       userId,
+      // 발급 할 쿠폰
       couponId,
     });
     res.status(200).json({
       result: true,
       data: addUserCoupon,
       message: `${findUser.userName}님에게 ${findCoupon.couponName}을 발급하였습니다.`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버 에러',
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 쿠폰 검색 기능
+export const getSearchCoupon = async (req, res) => {
+  try {
+    const { query } = req.query;
+    const coupons = await Coupon.findAll({
+      where: {
+        [Op.or]: [{ couponName: { [Op.like]: `%${query}%` } }, { discountPrice: { [Op.like]: `%${query}%` } }],
+      },
+      include: [{ model: User }],
+    });
+    res.status(200).json({
+      result: true,
+      data: coupons,
+      message: `"${query}"의 검색 결과입니다.`,
     });
   } catch (error) {
     res.status(500).json({
