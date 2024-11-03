@@ -13,11 +13,6 @@ const CouponModel = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    // 쿠폰 코드
-    couponCode: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
     // 할인 금액
     discountPrice: {
       type: DataTypes.INTEGER,

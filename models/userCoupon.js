@@ -7,6 +7,22 @@ const UserCouponModel = (sequelize) => {
       primaryKey: true,
       autoIncrement: true,
     },
+    // 쿠폰 코드
+    couponCode: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    // 쿠폰 만료일
+    expirationDate: {
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    // 쿠폰 사용 여부
+    isUsed: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     // 유저 ID (외래 키)
     userId: {
       type: DataTypes.INTEGER,
@@ -24,17 +40,6 @@ const UserCouponModel = (sequelize) => {
         key: 'id',
       },
       onDelete: 'CASCADE', // 쿠폰이 삭제되면 관련 UserCoupon도 삭제
-    },
-    // 쿠폰 사용 여부
-    isUsed: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: false,
-    },
-    // 쿠폰 만료일
-    expirationDate: {
-      type: DataTypes.DATE,
-      allowNull: false,
     },
   });
 
