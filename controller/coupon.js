@@ -14,6 +14,7 @@ export const addCoupon = async (req, res) => {
     const newCoupon = await Coupon.create({
       // 쿠폰 이름
       couponName,
+      //FIXME - 코드는 유저에게 발급할 때 생성으로 변경
       // 쿠폰 코드
       couponCode: newCouponCode,
       // 할인금액
@@ -39,9 +40,54 @@ export const addCoupon = async (req, res) => {
 //ANCHOR - 쿠폰 수정 및 삭제
 export const updateCoupon = async (req, res) => {
   try {
-    const { couponId, couponName, couponCode, discountPrice, isActive } = req.body;
-    //FIXME - 쿠폰 수정 로직 구현
-    const couponData = await Coupon.update({});
+    const { couponId, couponName, discountPrice, isActive } = req.body;
+    const findCoupon = await Coupon.findOne({
+      where: { id: couponId },
+    });
+    if (!findCoupon) {
+      return res.status(404).json({
+        result: false,
+        message: '존재하지 않는 쿠폰입니다.',
+      });
+    }
+    const updatedData = { couponName, discountPrice, isActive };
+    // 값이 없다면 키를 삭제 시킴
+    Object.keys(updatedData).forEach((key) => {
+      if (updatedData[key] === undefined || updatedData[key] === null || updatedData[key] === '') {
+        delete updatedData[key];
+      }
+    });
+    await Coupon.update(updatedData, { where: { id: couponId } });
+    res.status(200).json({
+      result: true,
+      message: updatedData.isActive
+        ? `"${findCoupon.couponName}" 쿠폰을 수정하는데 성공했습니다.`
+        : `"${findCoupon.couponName}" 쿠폰을 삭제하는데 성공했습니다.`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버 에러',
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 쿠폰 전체 조회 / 관리자
+export const getAllCoupon = async (req, res) => {
+  try {
+    const allCoupons = await Coupon.findAll();
+    if (!allCoupons) {
+      return res.status(404).json({
+        result: false,
+        message: '등록된 쿠폰이 없습니다.',
+      });
+    }
+    res.status(200).json({
+      result: true,
+      data: allCoupons,
+      message: '전체 쿠폰을 조회하는데 성공했습니다.',
+    });
   } catch (error) {
     res.status(500).json({
       result: false,
