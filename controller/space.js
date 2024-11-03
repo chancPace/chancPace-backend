@@ -250,14 +250,15 @@ export const getSearchSpace = async (req, res) => {
       where: {
         spaceStatus: SpaceStatuses.AVAILABLE,
         [Op.or]: [{ spaceName: { [Op.like]: `%${query}%` } }, { spaceLocation: { [Op.like]: `%${query}%` } }],
-        include: [
-          {
-            model: User,
-            attributes: ['userName'],
-          },
-        ],
       },
+      include: [
+        {
+          model: User,
+          attributes: ['userName'],
+        },
+      ],
     });
+    console.log("🚀 ~ getSearchSpace ~ spaces:", spaces)
     res.status(200).json({
       result: true,
       data: spaces,
