@@ -14,6 +14,16 @@ const PaymentModel = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    //공급가
+    suppliedPrice: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    //부가세
+    vat: {
+      type: DataTypes.INTEGER,
+      allowNull:false,
+    },
     // 결제 키
     paymentKey: {
       type: DataTypes.STRING,
@@ -37,6 +47,14 @@ const PaymentModel = (sequelize) => {
     },
     // 결제 수단
     paymentMethod: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    cardNumber: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    cardType: {
       type: DataTypes.STRING,
       allowNull: false,
     },
