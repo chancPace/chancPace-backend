@@ -53,6 +53,15 @@ const BookingModel = (sequelize) => {
         key: 'id',
       },
     },
+    // 결제 ID
+    paymentId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'payments',
+        key: 'id',
+      },
+    },
   });
 
   // 관계 설정
@@ -61,8 +70,8 @@ const BookingModel = (sequelize) => {
     Booking.belongsTo(db.User, { foreignKey: 'userId', targetKey: 'id' });
     // Booking : Space (N:1)
     Booking.belongsTo(db.Space, { foreignKey: 'spaceId', targetKey: 'id' });
-    // Booking : Payment (1:1)
-    Booking.hasOne(db.Payment, { foreignKey: 'bookingId', sourceKey: 'id' });
+    // Payment : Booking (1:1)
+    Booking.belongsTo(db.Payment, { foreignKey: 'paymentId', targetKey: 'id' });
   };
 
   return Booking;
