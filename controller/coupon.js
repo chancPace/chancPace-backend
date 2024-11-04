@@ -165,9 +165,23 @@ export const getSearchCoupon = async (req, res) => {
 };
 
 //ANCHOR - 쿠폰 상세페이지
-export const getCoupon = async (req, res) => {
+export const getOneCoupon = async (req, res) => {
   try {
-    const {} = req.query;
+    const { couponId } = req.query;
+    const findCoupon = await Coupon.findOne({
+      where: { id: couponId },
+    });
+    if (!findCoupon) {
+      return res.status(404).json({
+        result: false,
+        message: '존재하지 않는 쿠폰입니다.',
+      });
+    }
+    res.status(200).json({
+      result: true,
+      data: findCoupon,
+      message: '쿠폰 조회에 성공했습니다.',
+    });
   } catch (error) {
     res.status(500).json({
       result: false,

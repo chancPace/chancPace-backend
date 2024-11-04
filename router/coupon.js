@@ -1,5 +1,5 @@
 import express from 'express';
-import { addCoupon, getAllCoupon, getSearchCoupon, sendCoupon, updateCoupon } from '../controller/coupon.js';
+import { addCoupon, getAllCoupon, getOneCoupon, getSearchCoupon, sendCoupon, updateCoupon } from '../controller/coupon.js';
 const router = express.Router();
 
 //ANCHOR - 쿠폰 생성
@@ -12,5 +12,7 @@ router.get('/get-all-coupon', getAllCoupon);
 router.post('/send-coupon', sendCoupon);
 //ANCHOR - 쿠폰 검색 / 관리자
 router.get('/get-search-coupon', getSearchCoupon);
+//ANCHOR - 쿠폰 1개 조회 / 쿠폰 상세페이지
+router.get('/get-one-coupon', getOneCoupon);
 
 export default router;
