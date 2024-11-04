@@ -77,13 +77,12 @@ export const verifyPayment = async (req, res) => {
     };
 
     try {
-      await Payment.create(paymentData);
+      const newPayment = await Payment.create(paymentData);
+      res.status(200).json({ result: true, data: newPayment, message: '결제 성공' });
     } catch (dbError) {
       console.error('DB 저장 실패:', dbError);
       return res.status(500).json({ result: false, message: '결제 정보를 저장하는 데 실패했습니다.' });
     }
-
-    res.status(200).json({ result: true, data: response.data, message: '결제 성공' });
   } catch (error) {
     console.error('결제 검증 실패:', error.response?.data || error.message);
 
