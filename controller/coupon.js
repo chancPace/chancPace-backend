@@ -1,6 +1,7 @@
 import { Op } from 'sequelize';
 import db from '../models/index.js';
 import crypto from 'crypto';
+import exp from 'constants';
 
 const { Coupon, User, UserCoupon } = db;
 
@@ -92,7 +93,7 @@ export const getAllCoupon = async (req, res) => {
   }
 };
 
-//ANCHOR - 관리자가 유저에게 쿠폰을 발급
+//ANCHOR - 쿠폰 발급
 export const sendCoupon = async (req, res) => {
   try {
     const { expirationDate, userId, couponId } = req.body;
@@ -116,7 +117,7 @@ export const sendCoupon = async (req, res) => {
       // 쿠폰 코드
       couponCode: newCouponCode,
       // 유효 기간
-      expirationDate,
+      expirationDate: new Date(expirationDate),
       // 사용 여부
       isUsed: false,
       // 발급 받을 유저
@@ -130,6 +131,7 @@ export const sendCoupon = async (req, res) => {
       message: `${findUser.userName}님에게 ${findCoupon.couponName}을 발급하였습니다.`,
     });
   } catch (error) {
+    console.error('Error details:', error);
     res.status(500).json({
       result: false,
       message: '서버 에러',
@@ -153,6 +155,19 @@ export const getSearchCoupon = async (req, res) => {
       data: coupons,
       message: `"${query}"의 검색 결과입니다.`,
     });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버 에러',
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 쿠폰 상세페이지
+export const getCoupon = async (req, res) => {
+  try {
+    const {} = req.query;
   } catch (error) {
     res.status(500).json({
       result: false,

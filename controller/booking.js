@@ -1,7 +1,7 @@
 import db from '../models/index.js';
 import { BookingStatuses } from '../config/enum.js';
 
-const { Booking, User, Space } = db;
+const { Booking, User, Space, Payment } = db;
 
 //ANCHOR - 예약
 export const addBooking = async (req, res) => {
@@ -89,6 +89,7 @@ export const getBooking = async (req, res) => {
   try {
     const bookingData = await Booking.findAll({
       order: [['createdAt', 'DESC']],
+      include: [{ model: Payment }],
     });
     res.status(200).json({
       result: true,
@@ -116,6 +117,7 @@ export const getBookingBySpace = async (req, res) => {
         bookingStatus: BookingStatuses.COMPLETED,
       },
       attributes: ['startTime', 'endTime'],
+      include: [{ model: Payment }, { model: User }],
     });
 
     res.status(200).json({
