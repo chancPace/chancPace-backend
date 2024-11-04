@@ -90,7 +90,7 @@ export const getBooking = async (req, res) => {
   try {
     const bookingData = await Booking.findAll({
       order: [['createdAt', 'DESC']],
-      include: [{ model: Payment }],
+      include: [{ model: Payment }, { model: User }],
     });
     res.status(200).json({
       result: true,

@@ -42,7 +42,7 @@ export const signup = async (req, res) => {
     }
 
     const encryption = await bcrypt.hash(password, 10);
-    await User.create({
+    const newUser = await User.create({
       userName: `USER-${crypto.randomBytes(6).toString('hex')}`,
       email,
       password: encryption,
@@ -50,7 +50,9 @@ export const signup = async (req, res) => {
       isMarketingAgreed: agreed,
     });
 
-    res.status(200).json({ result: true, message: role === 'admin' ? '관리자 회원가입 성공' : '회원가입 성공' });
+    res
+      .status(200)
+      .json({ result: true, data: newUser, message: role === 'admin' ? '관리자 회원가입 성공' : '회원가입 성공' });
   } catch (error) {
     res.status(500).json({ result: false, message: '서버오류', error: error.message });
   }

@@ -26,14 +26,14 @@ db.Category = CategoryModel(sequelize);
 db.Space = SpaceModel(sequelize);
 // 리뷰 모델 (Space와 User를 참조)
 db.Review = ReviewModel(sequelize);
+// 결제 모델 (User를 참조)
+db.Payment = PaymentModel(sequelize);
 // 예약 모델 (Space와 User를 참조)
 db.Booking = BookingModel(sequelize);
 // 태그 모델
 db.Tag = TagModel(sequelize);
 // 쿠폰 모델
 db.Coupon = CouponModel(sequelize);
-// 결제 모델 (User를 참조)
-db.Payment = PaymentModel(sequelize);
 // 이미지 모델
 db.Image = ImageModel(sequelize);
 // UserCoupon 중간 테이블 모델 추가
