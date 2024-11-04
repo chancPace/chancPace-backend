@@ -6,8 +6,7 @@ import { PaymentStatuses } from '../config/enum.js';
 
 dotenv.config();
 
-const User = db.User;
-const Payment = db.Payment;
+const { Payment, User, Booking } = db;
 
 const TOSS_SECRET_KEY = process.env.TOSS_SECRET_KEY;
 const JWT_ACCESS_SECRET_KEY = process.env.JWT_ACCESS_SECRET;
@@ -155,6 +154,34 @@ export const Refund = async (req, res) => {
     return res.status(500).json({
       result: false,
       message: '결제 취소 요청에 실패했습니다.',
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 결제 1개 조회
+export const getOnePayment = async (req, res) => {
+  try {
+    const { paymentId } = req.query;
+    const findPayment = await Payment.findOne({
+      where: { id: paymentId },
+      include: [{ model: Booking }, { model: User }],
+    });
+    if (!findPayment) {
+      return res.status(404).json({
+        result: false,
+        message: '결제 기록이 없습니다.',
+      });
+    }
+    res.status(200).json({
+      result: true,
+      data: findPayment,
+      message: '하나의 결제 조회에 성공했습니다.',
+    });
+  } catch (error) {
+    return res.status(500).json({
+      result: false,
+      message: '서버 오류',
       error: error.message,
     });
   }
