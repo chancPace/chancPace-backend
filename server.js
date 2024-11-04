@@ -23,6 +23,8 @@ app.get('/', (req, res) => {
   res.send('서버연결 완');
 });
 
+app.use('/uploads', express.static('uploads'));
+
 // API 라우터
 app.use('/api/user', userRouter);
 app.use('/api/payment', paymentRouter);

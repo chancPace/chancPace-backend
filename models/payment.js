@@ -57,7 +57,7 @@ const PaymentModel = (sequelize) => {
     // 예약 ID
     bookingId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true,
       references: {
         model: 'bookings',
         key: 'id',

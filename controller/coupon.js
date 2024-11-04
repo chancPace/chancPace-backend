@@ -139,7 +139,7 @@ export const sendCoupon = async (req, res) => {
     });
   }
 };
-
+3;
 //ANCHOR - 쿠폰 검색 기능
 export const getSearchCoupon = async (req, res) => {
   try {
@@ -181,6 +181,55 @@ export const getOneCoupon = async (req, res) => {
       result: true,
       data: findCoupon,
       message: '쿠폰 조회에 성공했습니다.',
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버 에러',
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 신규 가입시 쿠폰발급
+export const newUserSendCoupon = async (req, res) => {
+  try {
+    const { expirationDate, userId, couponId } = req.body;
+    const findUser = await User.findOne({
+      where: { id: userId },
+    });
+    if (!findUser) {
+      return res.status(404).json({
+        result: false,
+        message: '존재하지 않는 유저입니다.',
+      });
+    }
+    const findCoupon = await Coupon.findOne({
+      where: { id: couponId },
+    });
+    if (!findCoupon) {
+      return res.status(404).json({
+        result: false,
+        message: '존재하지 않는 쿠폰입니다.',
+      });
+    }
+    const newCouponCode = `COUPON_${Date.now().toString()}_${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
+    const addUserCoupon = await UserCoupon.create({
+      // 쿠폰 코드
+      couponCode: newCouponCode,
+      // 유효 기간
+      expirationDate: new Date(expirationDate),
+      // 사용 여부
+      isUsed: false,
+      // 발급 받을 유저
+      userId,
+      // 발급 할 쿠폰
+      couponId,
+    });
+    res.status(200).json({
+      result: false,
+      data: addUserCoupon,
+      message: '신규유저에게 쿠폰을 발급을 성공했습니다.',
     });
   } catch (error) {
     res.status(500).json({
