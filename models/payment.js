@@ -54,12 +54,24 @@ const PaymentModel = (sequelize) => {
         key: 'id',
       },
     },
+    // 예약 ID
+    bookingId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'bookings',
+        key: 'id',
+      },
+      unique: true, // 하나의 결제는 하나의 예약에만 연결
+    },
   });
 
   // 관계 설정
   Payment.associate = (db) => {
     // Payment : User (N:1)
     Payment.belongsTo(db.User, { foreignKey: 'userId', targetKey: 'id' });
+    // Payment : Booking (1:1)
+    Payment.belongsTo(db.Booking, { foreignKey: 'bookingId', targetKey: 'id' });
   };
 
   return Payment;

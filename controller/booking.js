@@ -6,7 +6,7 @@ const { Booking, User, Space, Payment } = db;
 //ANCHOR - 예약
 export const addBooking = async (req, res) => {
   try {
-    const { startDate, startTime, endTime, userId, spaceId } = req.body;
+    const { startDate, startTime, endTime, userId, spaceId, paymentId } = req.body;
     // 유저 존재 조회
     const user = await User.findOne({ where: { id: userId } });
     if (user) {
@@ -49,6 +49,7 @@ export const addBooking = async (req, res) => {
           bookingStatus: 'COMPLETED',
           userId,
           spaceId,
+          paymentId,
         });
         if (newBooking) {
           return res.status(200).json({
