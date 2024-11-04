@@ -190,3 +190,30 @@ export const getOneCoupon = async (req, res) => {
     });
   }
 };
+
+//ANCHOR - 유저가 가지고 있는 쿠폰 조회
+export const getUserAllCoupon = async (req, res) => {
+  try {
+    const { userId } = req.query;
+    const findCoupons = await UserCoupon.findAll({
+      where: { userId },
+    });
+    if (!findCoupons) {
+      return res.status(404).json({
+        result: false,
+        message: '존재하지 않는 쿠폰입니다.',
+      });
+    }
+    res.status(200).json({
+      result: true,
+      data: findCoupons,
+      message: '쿠폰 조회에 성공했습니다.',
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버 에러',
+      error: error.message,
+    });
+  }
+};
