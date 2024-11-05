@@ -14,15 +14,20 @@ const PaymentModel = (sequelize) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    //공급가
+    // 쿠폰 금액
+    couponPrice: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    // 공급가
     suppliedPrice: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
-    //부가세
+    // 부가세
     vat: {
       type: DataTypes.INTEGER,
-      allowNull:false,
+      allowNull: false,
     },
     // 결제 키
     paymentKey: {

@@ -18,7 +18,7 @@ if (!TOSS_SECRET_KEY || !JWT_ACCESS_SECRET_KEY) {
 //ANCHOR - 결제 확인 및 처리
 export const verifyPayment = async (req, res) => {
   try {
-    const { paymentKey, orderId, amount } = req.body;
+    const { paymentKey, orderId, amount, couponPrice } = req.body;
     // Bearer 토큰 추출
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
@@ -67,11 +67,11 @@ export const verifyPayment = async (req, res) => {
         error: axiosError.response?.data || axiosError.message,
       });
     }
-    console.log(response.data, '백엔드데이터확인');
     const paymentData = {
       paymentKey: paymentKey,
       orderId: orderId,
       paymentPrice: amount,
+      couponPrice,
       paymentStatus: PaymentStatuses.COMPLETED,
       paymentMethod: response.data.method || 'UNKNOWN',
       userId: user.id,
