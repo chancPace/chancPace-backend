@@ -1,5 +1,5 @@
 import express from 'express';
-import { getOnePayment, listUserPayments, Refund, verifyPayment } from '../controller/payment.js';
+import { getAllPayment, getOnePayment, listUserPayments, Refund, verifyPayment } from '../controller/payment.js';
 
 const router = express.Router();
 
@@ -11,5 +11,7 @@ router.post('/list-user-payments', listUserPayments);
 router.post('/refund', Refund);
 //ANCHOR - 결제 1개 조회
 router.get('/get-one-payment', getOnePayment);
+//ANCHOR - 결제 전체 조회
+router.get('/get-all-payment', getAllPayment);
 
 export default router;

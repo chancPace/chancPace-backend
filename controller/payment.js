@@ -192,7 +192,31 @@ export const getOnePayment = async (req, res) => {
       message: '하나의 결제 조회에 성공했습니다.',
     });
   } catch (error) {
-    return res.status(500).json({
+    res.status(500).json({
+      result: false,
+      message: '서버 오류',
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 결제 전체 조회
+export const getAllPayment = async (req, res) => {
+  try {
+    const getPayments = await Payment.findAll();
+    if (!getPayments) {
+      return res.status(404).json({
+        result: false,
+        message: '결제 정보가 존재하지 않습니다.',
+      });
+    }
+    res.status(200).json({
+      result: true,
+      data: getPayments,
+      message: '결제 전체 조회를 성공했습니다',
+    });
+  } catch (error) {
+    res.status(500).json({
       result: false,
       message: '서버 오류',
       error: error.message,
