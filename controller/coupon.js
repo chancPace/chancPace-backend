@@ -93,8 +93,8 @@ export const getAllCoupon = async (req, res) => {
   }
 };
 
-//ANCHOR - 쿠폰 발급
-export const sendCoupon = async (req, res) => {
+//ANCHOR - 신규회원 쿠폰 발급
+export const sendNewCoupon = async (req, res) => {
   try {
     const { expirationDate, userId, couponId } = req.body;
     const findUser = await User.findOne({ where: { id: userId } });
@@ -139,7 +139,74 @@ export const sendCoupon = async (req, res) => {
     });
   }
 };
-3;
+
+// 쿠폰 발급
+export const sendCoupon = async (req, res) => {
+  try {
+    const { expirationDate, userId, couponId } = req.body;
+
+    // 쿠폰이 존재하는지 확인
+    const findCoupon = await Coupon.findOne({ where: { id: couponId } });
+    if (!findCoupon) {
+      return res.status(404).json({
+        result: false,
+        message: '존재하지 않는 쿠폰입니다.',
+      });
+    }
+
+    // 사용자 ID가 배열인지 확인
+    if (!Array.isArray(userId) || userId.length === 0) {
+      return res.status(400).json({
+        result: false,
+        message: 'userId는 배열이어야 하며, 최소 하나의 ID가 포함되어야 합니다.',
+      });
+    }
+
+    const successfulUsers = [];
+    const failedUsers = [];
+
+    // 각 사용자에게 쿠폰 발급
+    for (const id of userId) {
+      const findUser = await User.findOne({ where: { id } });
+      if (!findUser) {
+        failedUsers.push(id);
+        continue; // 사용자 찾기 실패 시 다음 사용자로 넘어감
+      }
+
+      // crypto를 사용하여 쿠폰 코드 생성
+      const newCouponCode = `COUPON_${Date.now().toString()}_${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
+
+      // 쿠폰 발급
+      const addUserCoupon = await UserCoupon.create({
+        couponCode: newCouponCode,
+        expirationDate: new Date(expirationDate),
+        isUsed: false,
+        userId: id, // 각 사용자에게 발급
+        couponId,
+      });
+
+      successfulUsers.push({ userId: id, coupon: addUserCoupon });
+    }
+
+    // 결과 응답
+    res.status(200).json({
+      result: true,
+      data: {
+        successful: successfulUsers,
+        failed: failedUsers,
+      },
+      message: `${successfulUsers.length}명에게 쿠폰이 발급되었습니다. ${failedUsers.length}명의 사용자에게는 쿠폰 발급에 실패했습니다.`,
+    });
+  } catch (error) {
+    console.error('Error details:', error);
+    res.status(500).json({
+      result: false,
+      message: '서버 에러',
+      error: error.message,
+    });
+  }
+};
+
 //ANCHOR - 쿠폰 검색 기능
 export const getSearchCoupon = async (req, res) => {
   try {

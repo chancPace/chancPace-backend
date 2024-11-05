@@ -12,9 +12,7 @@ const TOSS_SECRET_KEY = process.env.TOSS_SECRET_KEY;
 const JWT_ACCESS_SECRET_KEY = process.env.JWT_ACCESS_SECRET;
 
 if (!TOSS_SECRET_KEY || !JWT_ACCESS_SECRET_KEY) {
-  throw new Error(
-    '환경 변수가 설정되지 않았습니다. TOSS_SECRET_KEY 및 JWT_ACCESS_SECRET_KEY를 확인하세요.'
-  );
+  throw new Error('환경 변수가 설정되지 않았습니다. TOSS_SECRET_KEY 및 JWT_ACCESS_SECRET_KEY를 확인하세요.');
 }
 
 //ANCHOR - 결제 확인 및 처리
@@ -34,9 +32,7 @@ export const verifyPayment = async (req, res) => {
     try {
       jwtUserInfo = jwt.verify(token, JWT_ACCESS_SECRET_KEY);
     } catch (error) {
-      return res
-        .status(401)
-        .json({ result: false, message: '유효하지 않은 토큰입니다.' });
+      return res.status(401).json({ result: false, message: '유효하지 않은 토큰입니다.' });
     }
 
     const user = await User.findOne({
@@ -44,9 +40,7 @@ export const verifyPayment = async (req, res) => {
     });
 
     if (!user) {
-      return res
-        .status(404)
-        .json({ result: false, message: '사용자를 찾을 수 없습니다.' });
+      return res.status(404).json({ result: false, message: '사용자를 찾을 수 없습니다.' });
     }
 
     let response;
@@ -60,18 +54,13 @@ export const verifyPayment = async (req, res) => {
         },
         {
           headers: {
-            Authorization: `Basic ${Buffer.from(TOSS_SECRET_KEY + ':').toString(
-              'base64'
-            )}`,
+            Authorization: `Basic ${Buffer.from(TOSS_SECRET_KEY + ':').toString('base64')}`,
             'Content-Type': 'application/json',
           },
         }
       );
     } catch (axiosError) {
-      console.error(
-        '결제 확인 요청 실패:',
-        axiosError.response?.data || axiosError.message
-      );
+      console.error('결제 확인 요청 실패:', axiosError.response?.data || axiosError.message);
       return res.status(400).json({
         result: false,
         message: '결제 확인 요청에 실패했습니다.',
@@ -86,8 +75,8 @@ export const verifyPayment = async (req, res) => {
       paymentStatus: PaymentStatuses.COMPLETED,
       paymentMethod: response.data.method || 'UNKNOWN',
       userId: user.id,
-      cardNumber: response.data.card.number,
-      cardType: response.data.card.cardType,
+      cardNumber: response.data.card ? response.data.card.number : 'UNKNOWN',
+      cardType: response.data.card ? response.data.card.cardType : 'UNKNOWN',
       suppliedPrice: response.data.suppliedAmount,
       vat: response.data.vat,
     };
@@ -125,9 +114,7 @@ export const listUserPayments = async (req, res) => {
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
-      return res
-        .status(404)
-        .json({ result: false, message: '사용자를 찾을 수 없습니다.' });
+      return res.status(404).json({ result: false, message: '사용자를 찾을 수 없습니다.' });
     }
 
     const payment = await Payment.findAll({ where: { userId: user.id } });
@@ -163,9 +150,7 @@ export const Refund = async (req, res) => {
     const url = `https://api.tosspayments.com/v1/payments/${paymentKey}/cancel`;
     const options = {
       headers: {
-        Authorization: `Basic ${Buffer.from(TOSS_SECRET_KEY + ':').toString(
-          'base64'
-        )}`,
+        Authorization: `Basic ${Buffer.from(TOSS_SECRET_KEY + ':').toString('base64')}`,
         'Content-Type': 'application/json',
       },
     };
@@ -193,10 +178,7 @@ export const getOnePayment = async (req, res) => {
     const { paymentId } = req.query;
     const findPayment = await Payment.findOne({
       where: { id: paymentId },
-      include: [
-        { model: Booking, include: [{ model: Space }] },
-        { model: User },
-      ],
+      include: [{ model: Booking, include: [{ model: Space }] }, { model: User }],
     });
     if (!findPayment) {
       return res.status(404).json({

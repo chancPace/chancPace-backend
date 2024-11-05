@@ -8,6 +8,7 @@ import {
   sendCoupon,
   updateCoupon,
   UserCouponIsUsed,
+  sendNewCoupon,
 } from '../controller/coupon.js';
 const router = express.Router();
 
@@ -19,6 +20,8 @@ router.patch('/update-coupon', updateCoupon);
 router.get('/get-all-coupon', getAllCoupon);
 //ANCHOR - 쿠폰 발급
 router.post('/send-coupon', sendCoupon);
+//ANCHOR - 신규회원 구폰 발급
+router.post('/send-new-coupon', sendNewCoupon);
 //ANCHOR - 쿠폰 검색 / 관리자
 router.get('/get-search-coupon', getSearchCoupon);
 //ANCHOR - 쿠폰 1개 조회 / 쿠폰 상세페이지
