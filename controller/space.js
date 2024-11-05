@@ -3,7 +3,7 @@ import multer from 'multer';
 import jwt from 'jsonwebtoken';
 import { UserRoles, SpaceStatuses } from '../config/enum.js';
 import { Op } from 'sequelize';
-const { User, Space, Image, Booking, Payment } = db;
+const { User, Space, Image, Booking, Payment, Review } = db;
 
 //ANCHOR - 이미지업로드
 const storage = multer.diskStorage({
@@ -426,7 +426,7 @@ export const getMySpace = async (req, res) => {
     const { userId } = req.query;
     const findMySpace = await Space.findAll({
       where: { userId },
-      include: [{ model: Booking, include: [{ model: User, include: [{ model: Payment }] }] }],
+      include: [{ model: Booking, include: [{ model: User, include: [{ model: Payment }] }] }, { model: Review }],
     });
     if (findMySpace.length === 0) {
       return res.status(404).json({
