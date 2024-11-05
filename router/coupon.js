@@ -7,6 +7,7 @@ import {
   getUserAllCoupon,
   sendCoupon,
   updateCoupon,
+  UserCouponIsUsed,
 } from '../controller/coupon.js';
 const router = express.Router();
 
@@ -24,5 +25,7 @@ router.get('/get-search-coupon', getSearchCoupon);
 router.get('/get-one-coupon', getOneCoupon);
 //ANCHOR - 유저가 가지고 있는 쿠폰 조회
 router.get('/get-user-all-coupon', getUserAllCoupon);
+//ANCHOR - 유저가 쿠폰을 사용
+router.patch('/user-coupon-is-used', UserCouponIsUsed);
 
 export default router;

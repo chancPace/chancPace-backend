@@ -49,11 +49,7 @@ export const updateCoupon = async (req, res) => {
     const updatedData = { couponName, discountPrice, isActive };
     // 값이 없다면 키를 삭제 시킴
     Object.keys(updatedData).forEach((key) => {
-      if (
-        updatedData[key] === undefined ||
-        updatedData[key] === null ||
-        updatedData[key] === ''
-      ) {
+      if (updatedData[key] === undefined || updatedData[key] === null || updatedData[key] === '') {
         delete updatedData[key];
       }
     });
@@ -116,10 +112,7 @@ export const sendCoupon = async (req, res) => {
       });
     }
     // crypto를 사용하여 쿠폰 코드 생성
-    const newCouponCode = `COUPON_${Date.now().toString()}_${crypto
-      .randomBytes(4)
-      .toString('hex')
-      .toUpperCase()}`;
+    const newCouponCode = `COUPON_${Date.now().toString()}_${crypto.randomBytes(4).toString('hex').toUpperCase()}`;
     const addUserCoupon = await UserCoupon.create({
       // 쿠폰 코드
       couponCode: newCouponCode,
@@ -153,10 +146,7 @@ export const getSearchCoupon = async (req, res) => {
     const { query } = req.query;
     const coupons = await Coupon.findAll({
       where: {
-        [Op.or]: [
-          { couponName: { [Op.like]: `%${query}%` } },
-          { discountPrice: { [Op.like]: `%${query}%` } },
-        ],
+        [Op.or]: [{ couponName: { [Op.like]: `%${query}%` } }, { discountPrice: { [Op.like]: `%${query}%` } }],
       },
       include: [{ model: User }],
     });
@@ -207,9 +197,11 @@ export const getUserAllCoupon = async (req, res) => {
     const { userId } = req.query;
     const findCoupons = await UserCoupon.findAll({
       where: { userId },
-      include: [{
-        model:Coupon
-      }]
+      include: [
+        {
+          model: Coupon,
+        },
+      ],
     });
     if (!findCoupons) {
       return res.status(404).json({
@@ -221,6 +213,39 @@ export const getUserAllCoupon = async (req, res) => {
       result: true,
       data: findCoupons,
       message: '쿠폰 조회에 성공했습니다.',
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버 에러',
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 유저가 쿠폰 사용시 isUsed 값 변경
+export const UserCouponIsUsed = async (req, res) => {
+  try {
+    const { userCouponId } = req.body;
+    const findUserCoupon = await UserCoupon.findOne({
+      where: { id: userCouponId, isUsed: false },
+      include: [{ model: Coupon }],
+    });
+    if (!findUserCoupon) {
+      return res.status(404).json({
+        result: false,
+        message: '해당 쿠폰이 존재하지 않거나 이미 사용되었습니다.',
+      });
+    }
+    await UserCoupon.update(
+      { isUsed: true },
+      {
+        where: { id: userCouponId },
+      }
+    );
+    res.status(200).json({
+      result: true,
+      message: `"${findUserCoupon.Coupon.couponName}" 쿠폰을 사용했습니다`,
     });
   } catch (error) {
     res.status(500).json({
