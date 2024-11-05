@@ -426,7 +426,10 @@ export const getMySpace = async (req, res) => {
     const { userId } = req.query;
     const findMySpace = await Space.findAll({
       where: { userId },
-      include: [{ model: Booking, include: [{ model: User, include: [{ model: Payment }] }] }, { model: Review }],
+      include: [
+        { model: Booking, include: [{ model: User, include: [{ model: Payment }] }] },
+        { model: Review, include: [{ model: User }] },
+      ],
     });
     if (findMySpace.length === 0) {
       return res.status(404).json({
