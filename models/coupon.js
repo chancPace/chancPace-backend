@@ -44,6 +44,16 @@ const CouponModel = (sequelize) => {
     });
   };
 
+  Coupon.associate = (db) => {
+    Coupon.belongsToMany(db.User, {
+      through: db.UserCoupon,
+      foreignKey: 'couponId',
+      otherKey: 'userId',
+    });
+
+    Coupon.hasMany(db.UserCoupon, { foreignKey: 'couponId' });
+  };
+
   return Coupon;
 };
 
