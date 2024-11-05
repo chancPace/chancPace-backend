@@ -1,5 +1,6 @@
 import db from '../models/index.js';
-import { BookingStatuses } from '../config/enum.js';
+import { Op } from 'sequelize';
+import { BookingStatuses, UserRoles } from '../config/enum.js';
 
 const { Booking, User, Space, Payment } = db;
 
@@ -90,7 +91,7 @@ export const getBooking = async (req, res) => {
   try {
     const bookingData = await Booking.findAll({
       order: [['createdAt', 'DESC']],
-      include: [{ model: Payment }, { model: User }],
+      include: [{ model: Payment }, { model: User }, { model: Space }],
     });
     res.status(200).json({
       result: true,
@@ -156,6 +157,49 @@ export const cancelBooking = async (req, res) => {
     res.status(200).json({
       result: true,
       message: `예약 ID ${bookingId}의 상태를 취소로 변경했습니다.`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버 오류',
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 검색 기능
+export const getSearchBooking = async (req, res) => {
+  try {
+    const { query } = req.query;
+    if (!query) {
+      return res.status(400).json({
+        result: false,
+        message: '검색어가 필요합니다.',
+      });
+    }
+    const spaceBookings = await Space.findAll({
+      where: {
+        spaceName: { [Op.like]: `%${query}%` },
+      },
+      include: [{ model: Booking }],
+    });
+    const userBookings = await User.findAll({
+      where: {
+        userName: { [Op.like]: `%${query}%` },
+        role: {
+          [Op.ne]: UserRoles.ADMIN,
+        },
+      },
+      include: [{ model: Booking }],
+    });
+    const searchData = {
+      spaces: spaceBookings,
+      users: userBookings,
+    };
+    res.status(200).json({
+      result: true,
+      data: searchData,
+      message: `${query}가 예약 목록입니다.`,
     });
   } catch (error) {
     res.status(500).json({
