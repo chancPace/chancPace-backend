@@ -22,12 +22,12 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
 db.User = UserModel(sequelize);
 // 카테고리 모델
 db.Category = CategoryModel(sequelize);
+// 결제 모델 (User를 참조)
+db.Payment = PaymentModel(sequelize);
 // 공간 모델
 db.Space = SpaceModel(sequelize);
 // 리뷰 모델 (Space와 User를 참조)
 db.Review = ReviewModel(sequelize);
-// 결제 모델 (User를 참조)
-db.Payment = PaymentModel(sequelize);
 // 예약 모델 (Space와 User를 참조)
 db.Booking = BookingModel(sequelize);
 // 태그 모델

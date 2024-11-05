@@ -37,7 +37,7 @@ app.use('/api/review', reviewRouter);
 db.sequelize
   //NOTE -  alter: true / 데이터 유지하고 구조만 업데이트
   //NOTE -  force: true / 데이터 초기화 하고 구조 업데이트
-  .sync({ force: false })
+  .sync({ force: true })
   .then(() => {
     console.log('데이터베이스와 모델 동기화 완료');
     app.listen(PORT, () => {
