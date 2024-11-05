@@ -181,7 +181,16 @@ export const getSearchBooking = async (req, res) => {
       where: {
         spaceName: { [Op.like]: `%${query}%` },
       },
-      include: [{ model: Booking }],
+      include: [
+        {
+          model: Booking,
+          include: [
+            { model: Space }, // Booking과 연결된 Space 정보
+            { model: User }, // Booking과 연결된 User 정보
+            { model: Payment }, // Booking과 연결된 Payment 정보
+          ],
+        },
+      ],
     });
     const userBookings = await User.findAll({
       where: {
@@ -190,7 +199,16 @@ export const getSearchBooking = async (req, res) => {
           [Op.ne]: UserRoles.ADMIN,
         },
       },
-      include: [{ model: Booking }],
+      include: [
+        {
+          model: Booking,
+          include: [
+            { model: Space }, // Booking과 연결된 Space 정보
+            { model: User }, // Booking과 연결된 User 정보
+            { model: Payment }, // Booking과 연결된 Payment 정보
+          ],
+        },
+      ],
     });
     const searchData = {
       spaces: spaceBookings,
