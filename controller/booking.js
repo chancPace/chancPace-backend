@@ -210,14 +210,11 @@ export const getSearchBooking = async (req, res) => {
         },
       ],
     });
-    const searchData = {
-      spaces: spaceBookings,
-      users: userBookings,
-    };
+    const searchData = [...spaceBookings, ...userBookings];
     res.status(200).json({
       result: true,
       data: searchData,
-      message: `${query}가 예약 목록입니다.`,
+      message: `${query}의 해당하는 예약 목록입니다.`,
     });
   } catch (error) {
     res.status(500).json({
