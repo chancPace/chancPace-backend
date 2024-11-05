@@ -1,5 +1,12 @@
 import express from 'express';
-import { addBooking, cancelBooking, getBooking, getBookingBySpace, getSearchBooking } from '../controller/booking.js';
+import {
+  addBooking,
+  cancelBooking,
+  getBooking,
+  getBookingBySpace,
+  getOneBooking,
+  getSearchBooking,
+} from '../controller/booking.js';
 
 const router = express.Router();
 
@@ -13,5 +20,7 @@ router.get('/get-booking-by-space', getBookingBySpace);
 router.patch('/cancel-booking', cancelBooking);
 //ANCHOR - 예약 리스트 검색 기능 / 관리자
 router.get('/get-search-booking', getSearchBooking);
+//ANCHOR - 상세 페이지
+router.get('/get-one-booking', getOneBooking);
 
 export default router;

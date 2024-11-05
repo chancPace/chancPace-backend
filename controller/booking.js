@@ -209,3 +209,33 @@ export const getSearchBooking = async (req, res) => {
     });
   }
 };
+
+//ANCHOR - 예약 리스트 상세페이지 / 관리자
+export const getOneBooking = async (req, res) => {
+  try {
+    const { bookingId } = req.query;
+    const userBooking = await Booking.findOne({
+      where: {
+        id: bookingId,
+      },
+      include: [{ model: User }, { model: Space }, { model: Payment }],
+    });
+    if (!userBooking) {
+      return res.status(404).json({
+        result: false,
+        message: '존재하지 않는 예약입니다.',
+      });
+    }
+    res.status(200).json({
+      result: true,
+      data: userBooking,
+      message: '예약 상세페이지를 조회했습니다.',
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버 오류',
+      error: error.message,
+    });
+  }
+};
