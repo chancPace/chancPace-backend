@@ -427,6 +427,7 @@ export const getMySpace = async (req, res) => {
     const findMySpace = await Space.findAll({
       where: { userId },
       include: [
+        { model: Image },
         { model: Booking, include: [{ model: User, include: [{ model: Payment }] }] },
         { model: Review, include: [{ model: User }] },
       ],
