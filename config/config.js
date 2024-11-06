@@ -9,7 +9,7 @@ const config = {
     host: process.env.DB_HOST,
     dialect: 'mysql',
     serverHost: process.env.LOCAL_HOST,
-    serverPort: parseInt(process.env.LOCAL_PORT),
+    serverPort: process.env.LOCAL_PORT,
   },
   production: {
     username: process.env.DB_USERNAME,
@@ -18,7 +18,7 @@ const config = {
     host: process.env.DB_HOST,
     dialect: 'mysql',
     serverHost: process.env.SERVER_HOST,
-    serverPort: parseInt(process.env.SERVER_PORT),
+    serverPort: process.env.SERVER_PORT,
   },
 };
 
