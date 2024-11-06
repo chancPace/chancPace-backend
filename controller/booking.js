@@ -2,7 +2,7 @@ import db from '../models/index.js';
 import { Op } from 'sequelize';
 import { BookingStatuses, UserRoles } from '../config/enum.js';
 
-const { Booking, User, Space, Payment, Image } = db;
+const { Booking, User, Space, Payment, Image, Review } = db;
 
 //ANCHOR - 예약
 export const addBooking = async (req, res) => {
@@ -91,7 +91,7 @@ export const getBooking = async (req, res) => {
   try {
     const bookingData = await Booking.findAll({
       order: [['createdAt', 'DESC']],
-      include: [{ model: Payment }, { model: User }, { model: Space }],
+      include: [{ model: Payment }, { model: User }, { model: Space }, { model: Review }],
     });
     res.status(200).json({
       result: true,

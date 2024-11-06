@@ -1,7 +1,6 @@
 import { Op } from 'sequelize';
 import db from '../models/index.js';
 import crypto from 'crypto';
-import exp from 'constants';
 
 const { Coupon, User, UserCoupon } = db;
 
@@ -140,7 +139,7 @@ export const sendNewCoupon = async (req, res) => {
   }
 };
 
-// 쿠폰 발급
+//ANCHOR - 쿠폰 발급
 export const sendCoupon = async (req, res) => {
   try {
     const { expirationDate, userId, couponId } = req.body;
