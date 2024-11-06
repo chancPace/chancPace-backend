@@ -11,6 +11,7 @@ import CouponModel from './coupon.js';
 import TagModel from './tag.js';
 import ImageModel from './image.js';
 import UserCouponModel from './userCoupon.js';
+import WishlistModel from './wishlist.js';
 
 const env = process.env.NODE_ENV || 'development';
 const config = configFile[env];
@@ -38,6 +39,8 @@ db.Coupon = CouponModel(sequelize);
 db.Image = ImageModel(sequelize);
 // 유저와 쿠폰 중간 테이블 모델
 db.UserCoupon = UserCouponModel(sequelize);
+// 유저가 공간을 찜 목록
+db.Wishlist = WishlistModel(sequelize);
 
 // 관계 설정
 Object.keys(db).forEach((modelName) => {

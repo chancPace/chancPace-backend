@@ -132,6 +132,8 @@ const SpaceModel = (sequelize) => {
     Space.hasMany(db.Image, { foreignKey: 'spaceId', sourceKey: 'id' });
     // Space : User (N:1)
     Space.belongsTo(db.User, { foreignKey: 'userId', targetKey: 'id' });
+    // Space : Wishlist (1:N) 관계
+    Space.hasMany(db.Wishlist, { foreignKey: 'spaceId', sourceKey: 'id', onDelete: 'CASCADE' });
   };
 
   return Space;

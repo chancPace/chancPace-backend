@@ -94,6 +94,8 @@ const UserModel = (sequelize) => {
       foreignKey: 'userId',
       otherKey: 'couponId',
     });
+    // User : Wishlist (1:N) 관계
+    User.hasMany(db.Wishlist, { foreignKey: 'userId', sourceKey: 'id' });
   };
 
   return User;

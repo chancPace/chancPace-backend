@@ -10,6 +10,7 @@ import categoryRouter from './router/category.js';
 import couponRouter from './router/coupon.js';
 import bookingRouter from './router/booking.js';
 import reviewRouter from './router/review.js';
+import wishlistRouter from './router/wishlist.js';
 
 dotenv.config();
 
@@ -33,6 +34,7 @@ app.use('/api/category', categoryRouter);
 app.use('/api/coupon', couponRouter);
 app.use('/api/booking', bookingRouter);
 app.use('/api/review', reviewRouter);
+app.use('/api/wishlist', wishlistRouter);
 
 db.sequelize
   //NOTE -  alter: true / 데이터 유지하고 구조만 업데이트

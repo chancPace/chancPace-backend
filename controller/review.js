@@ -2,12 +2,12 @@ import db from '../models/index.js';
 import jwt from 'jsonwebtoken';
 import { ReviewStatus } from '../config/enum.js';
 
-const { Review, User, Space } = db;
+const { Review, User, Space, Booking } = db;
 
 //ANCHOR - 리뷰 생성
 export const addReview = async (req, res) => {
   try {
-    const { spaceId, reviewComment, reviewRating } = req.body;
+    const { bookingId, spaceId, reviewComment, reviewRating } = req.body;
     // 토큰 검증
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
@@ -27,13 +27,21 @@ export const addReview = async (req, res) => {
       });
     }
 
-    const find = await User.findOne({ where: { email: jwtUserInfo.user.email } });
-    if (!find) {
+    const findUser = await User.findOne({ where: { email: jwtUserInfo.user.email } });
+    if (!findUser) {
       return res.status(404).json({
         result: false,
         message: '유저가 존재하지 않습니다.',
       });
     }
+    const findBooking = await Booking.findOne({ where: { id: bookingId } });
+    if (!findBooking) {
+      return res.status(404).json({
+        result: false,
+        message: '예약이 존재하지 않습니다.',
+      });
+    }
+
     if (1 <= reviewRating && reviewRating <= 5) {
       // 리뷰 생성
       const newReview = await Review.create({
@@ -44,7 +52,9 @@ export const addReview = async (req, res) => {
         // 공간 ID
         spaceId,
         // 유저 ID,
-        userId: find.id,
+        userId: findUser.id,
+        // 예약 ID
+        bookingId: findBooking.id,
       });
 
       res.status(200).json({
@@ -74,7 +84,7 @@ export const updateRatingBySpace = async (req, res) => {
 
     // 리뷰의 수
     const reviewCount = await Review.count({
-      where: { spaceId, reviewStatus: ReviewStatus.AVAILABLE }, 
+      where: { spaceId, reviewStatus: ReviewStatus.AVAILABLE },
     });
     // 리뷰가 가지고 있는 각각의 별점들
     const reviewAllRating = await Review.findAll({
