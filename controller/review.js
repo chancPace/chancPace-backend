@@ -74,11 +74,11 @@ export const updateRatingBySpace = async (req, res) => {
 
     // 리뷰의 수
     const reviewCount = await Review.count({
-      where: { spaceId },
+      where: { spaceId, reviewStatus: ReviewStatus.AVAILABLE }, 
     });
     // 리뷰가 가지고 있는 각각의 별점들
     const reviewAllRating = await Review.findAll({
-      where: { spaceId },
+      where: { spaceId, reviewStatus: ReviewStatus.AVAILABLE },
       attributes: ['reviewRating'],
     });
 
@@ -222,7 +222,9 @@ export const getMyReview = async (req, res) => {
     const myAllReview = await Review.findAll({
       where: {
         userId,
+        reviewStatus: ReviewStatus.AVAILABLE,
       },
+      include: [{ model: Space }],
     });
     res.status(200).json({
       result: true,
