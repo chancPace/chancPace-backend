@@ -2,6 +2,7 @@ import express from 'express';
 import db from './models/index.js';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import config from './config/config.js';
 
 import userRouter from './router/user.js';
 import paymentRouter from './router/payment.js';
@@ -12,34 +13,28 @@ import bookingRouter from './router/booking.js';
 import reviewRouter from './router/review.js';
 import wishlistRouter from './router/wishlist.js';
 
-// 환경에 따라 다른 .env 파일 로드
-if (process.env.NODE_ENV === 'production') {
-  dotenv.config({ path: '.env.production' });
-} else {
-  dotenv.config({ path: '.env.development' });
-}
+dotenv.config();
+
+const env = process.env.NODE_ENV || 'development';
+const currentConfig = config[env]; // 환경에 맞는 설정 사용
 
 const corsOptions = {
-  origin: [
-    process.env.FRONTEND_GUEST_URL, // 게스트 페이지 URL (3000번)
-    process.env.FRONTEND_HOST_URL, // 호스트 페이지 URL (3100번)
-    process.env.FRONTEND_ADMIN_URL, // 관리자 페이지 URL (3200번)
-  ],
+  origin: '*', // 어나니머스 설정?
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   allowedHeaders: 'Content-Type,Authorization',
 };
 
 const app = express();
-const PORT = process.env.PORT || 4000;
-const HOST = process.env.HOST || 'localhost';
+
+const PORT = currentConfig.serverPort; // 현재 환경에 맞는 호스트
+const HOST = currentConfig.serverHost; // 현재 환경에 맞는 포트
 
 app.use(express.json());
-app.use(cors());
-// app.use(cors(corsOptions));
+app.use(cors(corsOptions));
 
-app.get('/', (req, res) => {
-  res.send('서버연결 완');
-});
+// app.get('/', (req, res) => {
+//   res.send('서버연결 완');
+// });
 
 app.use('/uploads', express.static('uploads'));
 
