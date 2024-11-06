@@ -12,23 +12,29 @@ import bookingRouter from './router/booking.js';
 import reviewRouter from './router/review.js';
 import wishlistRouter from './router/wishlist.js';
 
-dotenv.config();
+// 환경에 따라 다른 .env 파일 로드
+if (process.env.NODE_ENV === 'production') {
+  dotenv.config({ path: '.env.production' });
+} else {
+  dotenv.config({ path: '.env.development' });
+}
 
-// const corsOptions = {
-//   origin: [
-//     process.env.FRONTEND_GUEST_URL, // 게스트 페이지 URL (3000번)
-//     process.env.FRONTEND_HOST_URL, // 호스트 페이지 URL (3100번)
-//     process.env.FRONTEND_ADMIN_URL, // 관리자 페이지 URL (3200번)
-//   ],
-//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-//   allowedHeaders: 'Content-Type,Authorization',
-// };
+const corsOptions = {
+  origin: [
+    process.env.FRONTEND_GUEST_URL, // 게스트 페이지 URL (3000번)
+    process.env.FRONTEND_HOST_URL, // 호스트 페이지 URL (3100번)
+    process.env.FRONTEND_ADMIN_URL, // 관리자 페이지 URL (3200번)
+  ],
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  allowedHeaders: 'Content-Type,Authorization',
+};
 
 const app = express();
 const PORT = process.env.PORT || 4000;
+const HOST = process.env.HOST || 'localhost';
 
 app.use(express.json());
-app.use(cors())
+app.use(cors());
 // app.use(cors(corsOptions));
 
 app.get('/', (req, res) => {
@@ -54,7 +60,7 @@ db.sequelize
   .then(() => {
     console.log('데이터베이스와 모델 동기화 완료');
     app.listen(PORT, () => {
-      console.log(`서버 실행: http://localhost:${PORT}`);
+      console.log(`서버 실행: http://${HOST}:${PORT}`);
     });
   })
   .catch((err) => {

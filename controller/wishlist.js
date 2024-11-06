@@ -70,3 +70,33 @@ export const removeWishlist = async (req, res) => {
     });
   }
 };
+
+//ANCHOR - 내가 찜한 목록 가져오기
+export const getWishlist = async (req, res) => {
+  try {
+    const { userId } = req.query;
+    const findUser = await User.findOne({
+      where: { id: userId },
+    });
+    if (!findUser) {
+      return res.status(404).json({
+        result: false,
+        message: '존재하지 않는 유저입니다.',
+      });
+    }
+    const findWishlist = await Wishlist.findAll({
+      where: { userId: findUser.id },
+    });
+    res.status(200).json({
+      result: true,
+      data: findWishlist,
+      message: `${findUser.userName}님의 찜 목록을 조회했습니다.`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버오류',
+      error: error.message,
+    });
+  }
+};
