@@ -2,7 +2,7 @@ import { DataTypes } from 'sequelize';
 import { UserRoles, AccountStatuses, Genders } from '../config/enum.js';
 
 const UserModel = (sequelize) => {
-  const User = sequelize.define('User', {
+  const User = sequelize.define('users', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,

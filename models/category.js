@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 
 const CategoryModel = (sequelize) => {
-  const Category = sequelize.define('Category', {
+  const Category = sequelize.define('categories', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,

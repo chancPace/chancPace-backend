@@ -2,7 +2,7 @@ import { DataTypes } from 'sequelize';
 import { ReviewStatus } from '../config/enum.js';
 
 const ReviewModel = (sequelize) => {
-  const Review = sequelize.define('Review', {
+  const Review = sequelize.define('reviews', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -48,6 +48,14 @@ const ReviewModel = (sequelize) => {
         key: 'id',
       },
     },
+    bookingId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'bookings',
+        key: 'id',
+      },
+    },
   });
 
   // 관계 설정
@@ -56,6 +64,8 @@ const ReviewModel = (sequelize) => {
     Review.belongsTo(db.User, { foreignKey: 'userId', targetKey: 'id' });
     // Review : Space (N:1)
     Review.belongsTo(db.Space, { foreignKey: 'spaceId', targetKey: 'id' });
+    // Review : Booking (1:1)
+    Review.belongsTo(db.Booking, { foreignKey: 'bookingId', as: 'booking' });
   };
 
   return Review;

@@ -2,7 +2,7 @@ import { DataTypes } from 'sequelize';
 import { SpaceStatuses } from '../config/enum.js';
 
 const SpaceModel = (sequelize) => {
-  const Space = sequelize.define('Space', {
+  const Space = sequelize.define('spaces', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,

@@ -2,7 +2,7 @@ import { DataTypes } from 'sequelize';
 import { PaymentStatuses } from '../config/enum.js';
 
 const PaymentModel = (sequelize) => {
-  const Payment = sequelize.define('Payment', {
+  const Payment = sequelize.define('payments', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,

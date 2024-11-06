@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 
 const TagModel = (sequelize) => {
-  const Tag = sequelize.define('Tag', {
+  const Tag = sequelize.define('tags', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,

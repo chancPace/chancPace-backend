@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 
 const UserCouponModel = (sequelize) => {
-  const UserCoupon = sequelize.define('UserCoupon', {
+  const UserCoupon = sequelize.define('usercoupons', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,

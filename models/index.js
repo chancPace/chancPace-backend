@@ -22,13 +22,13 @@ const sequelize = new Sequelize(config.database, config.username, config.passwor
 db.User = UserModel(sequelize);
 // 카테고리 모델
 db.Category = CategoryModel(sequelize);
-// 결제 모델 (User를 참조)
+// 결제 모델
 db.Payment = PaymentModel(sequelize);
 // 공간 모델
 db.Space = SpaceModel(sequelize);
-// 리뷰 모델 (Space와 User를 참조)
+// 리뷰 모델
 db.Review = ReviewModel(sequelize);
-// 예약 모델 (Space와 User를 참조)
+// 예약 모델
 db.Booking = BookingModel(sequelize);
 // 태그 모델
 db.Tag = TagModel(sequelize);
@@ -36,7 +36,7 @@ db.Tag = TagModel(sequelize);
 db.Coupon = CouponModel(sequelize);
 // 이미지 모델
 db.Image = ImageModel(sequelize);
-// UserCoupon 중간 테이블 모델 추가
+// 유저와 쿠폰 중간 테이블 모델
 db.UserCoupon = UserCouponModel(sequelize);
 
 // 관계 설정

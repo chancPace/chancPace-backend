@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 
 const CouponModel = (sequelize) => {
-  const Coupon = sequelize.define('Coupon', {
+  const Coupon = sequelize.define('coupons', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,

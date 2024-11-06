@@ -2,7 +2,7 @@ import { DataTypes } from 'sequelize';
 import { BookingStatuses } from '../config/enum.js';
 
 const BookingModel = (sequelize) => {
-  const Booking = sequelize.define('Booking', {
+  const Booking = sequelize.define('bookings', {
     id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -72,6 +72,8 @@ const BookingModel = (sequelize) => {
     Booking.belongsTo(db.Space, { foreignKey: 'spaceId', targetKey: 'id' });
     // Payment : Booking (1:1)
     Booking.belongsTo(db.Payment, { foreignKey: 'paymentId', targetKey: 'id' });
+    // Booking : Review (1:1)
+    Booking.hasOne(db.Review, { foreignKey: 'bookingId', as: 'review' });
   };
 
   return Booking;
