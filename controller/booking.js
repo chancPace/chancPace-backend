@@ -167,63 +167,64 @@ export const cancelBooking = async (req, res) => {
   }
 };
 
+//NOTE - 미 사용 로직
 //ANCHOR - 검색 기능
-export const getSearchBooking = async (req, res) => {
-  try {
-    const { query } = req.query;
-    if (!query) {
-      return res.status(400).json({
-        result: false,
-        message: '검색어가 필요합니다.',
-      });
-    }
-    const spaceBookings = await Space.findAll({
-      where: {
-        spaceName: { [Op.like]: `%${query}%` },
-      },
-      include: [
-        {
-          model: Booking,
-          include: [
-            { model: Space }, // Booking과 연결된 Space 정보
-            { model: User }, // Booking과 연결된 User 정보
-            { model: Payment }, // Booking과 연결된 Payment 정보
-          ],
-        },
-      ],
-    });
-    const userBookings = await User.findAll({
-      where: {
-        userName: { [Op.like]: `%${query}%` },
-        role: {
-          [Op.ne]: UserRoles.ADMIN,
-        },
-      },
-      include: [
-        {
-          model: Booking,
-          include: [
-            { model: Space }, // Booking과 연결된 Space 정보
-            { model: User }, // Booking과 연결된 User 정보
-            { model: Payment }, // Booking과 연결된 Payment 정보
-          ],
-        },
-      ],
-    });
-    const searchData = [...spaceBookings, ...userBookings];
-    res.status(200).json({
-      result: true,
-      data: searchData,
-      message: `${query}의 해당하는 예약 목록입니다.`,
-    });
-  } catch (error) {
-    res.status(500).json({
-      result: false,
-      message: '서버 오류',
-      error: error.message,
-    });
-  }
-};
+// export const getSearchBooking = async (req, res) => {
+//   try {
+//     const { query } = req.query;
+//     if (!query) {
+//       return res.status(400).json({
+//         result: false,
+//         message: '검색어가 필요합니다.',
+//       });
+//     }
+//     const spaceBookings = await Space.findAll({
+//       where: {
+//         spaceName: { [Op.like]: `%${query}%` },
+//       },
+//       include: [
+//         {
+//           model: Booking,
+//           include: [
+//             { model: Space }, // Booking과 연결된 Space 정보
+//             { model: User }, // Booking과 연결된 User 정보
+//             { model: Payment }, // Booking과 연결된 Payment 정보
+//           ],
+//         },
+//       ],
+//     });
+//     const userBookings = await User.findAll({
+//       where: {
+//         userName: { [Op.like]: `%${query}%` },
+//         role: {
+//           [Op.ne]: UserRoles.ADMIN,
+//         },
+//       },
+//       include: [
+//         {
+//           model: Booking,
+//           include: [
+//             { model: Space }, // Booking과 연결된 Space 정보
+//             { model: User }, // Booking과 연결된 User 정보
+//             { model: Payment }, // Booking과 연결된 Payment 정보
+//           ],
+//         },
+//       ],
+//     });
+//     const searchData = [...spaceBookings, ...userBookings];
+//     res.status(200).json({
+//       result: true,
+//       data: searchData,
+//       message: `${query}의 해당하는 예약 목록입니다.`,
+//     });
+//   } catch (error) {
+//     res.status(500).json({
+//       result: false,
+//       message: '서버 오류',
+//       error: error.message,
+//     });
+//   }
+// };
 
 //ANCHOR - 예약 리스트 상세페이지 / 관리자
 export const getOneBooking = async (req, res) => {
@@ -245,6 +246,51 @@ export const getOneBooking = async (req, res) => {
       result: true,
       data: userBooking,
       message: '예약 상세페이지를 조회했습니다.',
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버 오류',
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 예약 검색 로직
+export const getSearchBooking = async (req, res) => {
+  try {
+    const { query } = req.query;
+    if (!query) {
+      return res.status(400).json({
+        result: false,
+        message: '검색어가 필요합니다.',
+      });
+    }
+    const findSpace = await Space.findAll({
+      where: {
+        spaceName: { [Op.like]: `%${query}%` },
+      },
+    });
+    const findBookingBySpace = await Booking.findAll({
+      where: { spaceId: findSpace.id },
+    });
+
+    const findUser = await User.findAll({
+      where: {
+        userName: { [Op.like]: `%${query}%` },
+        role: {
+          [Op.ne]: UserRoles.ADMIN,
+        },
+      },
+    });
+    const findBookingByUser = await Booking.findAll({
+      where: { userId: findUser.id },
+    });
+    const searchData = [...findBookingBySpace, ...findBookingByUser];
+    res.status(200).json({
+      result: true,
+      data: searchData,
+      message: `${query}의 해당하는 예약 목록입니다.`,
     });
   } catch (error) {
     res.status(500).json({

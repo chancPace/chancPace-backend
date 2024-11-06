@@ -14,11 +14,22 @@ import wishlistRouter from './router/wishlist.js';
 
 dotenv.config();
 
+// const corsOptions = {
+//   origin: [
+//     process.env.FRONTEND_GUEST_URL, // 게스트 페이지 URL (3000번)
+//     process.env.FRONTEND_HOST_URL, // 호스트 페이지 URL (3100번)
+//     process.env.FRONTEND_ADMIN_URL, // 관리자 페이지 URL (3200번)
+//   ],
+//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//   allowedHeaders: 'Content-Type,Authorization',
+// };
+
 const app = express();
 const PORT = process.env.PORT || 4000;
 
 app.use(express.json());
-app.use(cors());
+app.use(cors())
+// app.use(cors(corsOptions));
 
 app.get('/', (req, res) => {
   res.send('서버연결 완');
