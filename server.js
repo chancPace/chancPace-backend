@@ -32,9 +32,9 @@ const HOST = currentConfig.serverHost; // 현재 환경에 맞는 포트
 app.use(express.json());
 app.use(cors(corsOptions));
 
-// app.get('/', (req, res) => {
-//   res.send('서버연결 완');
-// });
+app.get('/', (req, res) => {
+  res.send('서버연결 완');
+});
 
 app.use('/uploads', express.static('uploads'));
 
