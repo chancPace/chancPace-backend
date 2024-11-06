@@ -17,11 +17,7 @@ const updateUserData = async (id, updatedData, res) => {
     });
   }
   Object.keys(updatedData).forEach((key) => {
-    if (
-      updatedData[key] === undefined ||
-      updatedData[key] === null ||
-      updatedData[key] === ''
-    ) {
+    if (updatedData[key] === undefined || updatedData[key] === null || updatedData[key] === '') {
       delete updatedData[key];
     }
   });
@@ -32,7 +28,7 @@ const updateUserData = async (id, updatedData, res) => {
 //ANCHOR - 회원가입
 export const signup = async (req, res) => {
   try {
-    const { email, password, role, agreed, adminSecretKey } = req.body;
+    const { email, userName, password, role, agreed, adminSecretKey } = req.body;
 
     if (role === 'admin') {
       if (adminSecretKey !== process.env.ADMIN_SECRET_KEY) {
@@ -45,14 +41,12 @@ export const signup = async (req, res) => {
 
     const find = await User.findOne({ where: { email } });
     if (find) {
-      return res
-        .status(400)
-        .json({ result: false, message: '이미 존재하는 회원입니다.' });
+      return res.status(400).json({ result: false, message: '이미 존재하는 회원입니다.' });
     }
 
     const encryption = await bcrypt.hash(password, 10);
     const newUser = await User.create({
-      userName: `USER-${crypto.randomBytes(6).toString('hex')}`,
+      userName: userName ? userName : `USER-${crypto.randomBytes(6).toString('hex')}`,
       email,
       password: encryption,
       role,
@@ -65,9 +59,7 @@ export const signup = async (req, res) => {
       message: role === 'admin' ? '관리자 회원가입 성공' : '회원가입 성공',
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ result: false, message: '서버오류', error: error.message });
+    res.status(500).json({ result: false, message: '서버오류', error: error.message });
   }
 };
 
@@ -105,13 +97,9 @@ export const login = async (req, res) => {
         };
 
         // 토큰 발급
-        const token = jwt.sign(
-          { user: jwtToken },
-          process.env.JWT_ACCESS_SECRET,
-          {
-            expiresIn: process.env.JWT_ACCESS_LIFETIME,
-          }
-        );
+        const token = jwt.sign({ user: jwtToken }, process.env.JWT_ACCESS_SECRET, {
+          expiresIn: process.env.JWT_ACCESS_LIFETIME,
+        });
 
         res.status(200).json({
           message: '로그인 성공. 토큰이 발급 되었습니다.',

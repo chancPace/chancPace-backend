@@ -130,3 +130,32 @@ export const removeCategory = async (req, res) => {
     });
   }
 };
+
+//ANCHOR - 카테고리 수정
+export const updateCategory = async (req, res) => {
+  try {
+    const { categoryId, categoryName, pId } = req.body;
+    const findCategory = await findOne({
+      where: { id: categoryId },
+    });
+    if (!findCategory) {
+      return res.status(404).json({
+        result: false,
+        message: '카테고리가 존재하지 않습니다.',
+      });
+    }
+    const updateCategory = {
+      categoryName,
+      pId,
+    };
+    await Category.update(updateCategory, {
+      where: categoryId,
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버오류',
+      error,
+    });
+  }
+};

@@ -42,5 +42,31 @@ export const addWishlist = async (req, res) => {
   }
 };
 
-//ANCHOR - 찜 삭제 
-//FIXME - 
+//ANCHOR - 찜 삭제
+export const removeWishlist = async (req, res) => {
+  try {
+    const { wishlistId } = req.body;
+    const findWishlist = await Wishlist.findOne({
+      where: { id: wishlistId },
+    });
+    if (!findWishlist) {
+      return res.status(404).json({
+        result: false,
+        message: '존재하지 않는 찜 목록입니다.',
+      });
+    }
+    await Wishlist.destroy({
+      where: { id: findWishlist.id },
+    });
+    res.status(200).json({
+      result: true,
+      message: '찜목록을 삭제했습니다.',
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버오류',
+      error: error.message,
+    });
+  }
+};
