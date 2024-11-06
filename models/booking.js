@@ -73,7 +73,7 @@ const BookingModel = (sequelize) => {
     // Payment : Booking (1:1)
     Booking.belongsTo(db.Payment, { foreignKey: 'paymentId', targetKey: 'id' });
     // Booking : Review (1:1)
-    Booking.hasOne(db.Review, { foreignKey: 'bookingId', as: 'review' });
+    Booking.hasOne(db.Review, { foreignKey: 'bookingId', targetKey: 'id' });
   };
 
   return Booking;

@@ -65,7 +65,7 @@ const ReviewModel = (sequelize) => {
     // Review : Space (N:1)
     Review.belongsTo(db.Space, { foreignKey: 'spaceId', targetKey: 'id' });
     // Review : Booking (1:1)
-    Review.belongsTo(db.Booking, { foreignKey: 'bookingId', as: 'booking' });
+    Review.belongsTo(db.Booking, { foreignKey: 'bookingId', targetKey: 'id' });
   };
 
   return Review;
