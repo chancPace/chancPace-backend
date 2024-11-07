@@ -63,7 +63,6 @@ const uploadToS3 = (file) => {
     Key: `images/${Date.now()}-${file.originalname}`, // S3에 저장될 파일 경로
     Body: file.buffer, // multer로 받은 파일의 버퍼
     ContentType: file.mimetype, // 파일의 MIME 타입
-    ACL: 'public-read', // 파일을 공개 읽기 권한으로 설정
   };
   return s3.upload(params).promise();
 };
