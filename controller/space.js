@@ -53,12 +53,19 @@ export const uploadSpaceImage = upload.array('image', 10);
 
 // s3에 파일 업로드 하는 함수
 const uploadToS3 = (file) => {
+  if (isLocal) {
+    console.log('로컬 환경에서 S3 업로드는 실행되지 않습니다.');
+    return;
+  }
   const bucketName = process.env.AWS_S3_BUCKET_NAME;
   if (!bucketName) {
     throw new Error('AWS S3 버킷 이름이 설정되지 않았습니다. 환경 변수를 확인하세요.');
   }
+  if (!file.buffer) {
+    throw new Error('파일 버퍼가 존재하지 않습니다. multer 설정을 확인하세요.');
+  }
   const params = {
-    Bucket: process.env.AWS_S3_BUCKET_NAME, // S3 버킷 이름
+    Bucket: bucketName, // S3 버킷 이름
     Key: `images/${Date.now()}-${file.originalname}`, // S3에 저장될 파일 경로
     Body: file.buffer, // multer로 받은 파일의 버퍼
     ContentType: file.mimetype, // 파일의 MIME 타입
@@ -109,6 +116,7 @@ export const addNewSpace = async (req, res) => {
       return res.status(401).json({
         result: false,
         message: '유효하지 않은 토큰입니다.',
+        error: error.message,
       });
     }
     // 디코딩 된 이메일 정보로 유저 데이터 가져오기
@@ -160,10 +168,10 @@ export const addNewSpace = async (req, res) => {
 
     // 이미지 URL 수집
     const imageUrls = isLocal
-      ? req?.files?.map((file) => file.path)
+      ? req.files.map((file) => file.path)
       : await Promise.all(
-          req?.files?.map(async (file) => {
-            const s3Response = await uploadToS3(file);
+          req.files.map((file) => {
+            const s3Response = uploadToS3(file);
             return s3Response.Location;
           })
         );

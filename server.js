@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import config from './config/config.js';
 
-
 import userRouter from './router/user.js';
 import paymentRouter from './router/payment.js';
 import spaceRouter from './router/space.js';
@@ -13,6 +12,7 @@ import couponRouter from './router/coupon.js';
 import bookingRouter from './router/booking.js';
 import reviewRouter from './router/review.js';
 import wishlistRouter from './router/wishlist.js';
+import nodemailerRouter from './router/nodemailer.js';
 
 dotenv.config();
 
@@ -48,6 +48,7 @@ app.use('/api/coupon', couponRouter);
 app.use('/api/booking', bookingRouter);
 app.use('/api/review', reviewRouter);
 app.use('/api/wishlist', wishlistRouter);
+app.use('/api/nodemailer', nodemailerRouter);
 
 db.sequelize
   //NOTE -  alter: true / 데이터 유지하고 구조만 업데이트
