@@ -2,7 +2,7 @@ import db from '../models/index.js';
 import jwt from 'jsonwebtoken';
 import { ReviewStatus } from '../config/enum.js';
 
-const { Review, User, Space, Booking } = db;
+const { Review, User, Space, Booking, Image } = db;
 
 //ANCHOR - 리뷰 생성
 export const addReview = async (req, res) => {
@@ -27,7 +27,9 @@ export const addReview = async (req, res) => {
       });
     }
 
-    const findUser = await User.findOne({ where: { email: jwtUserInfo.user.email } });
+    const findUser = await User.findOne({
+      where: { email: jwtUserInfo.user.email },
+    });
     if (!findUser) {
       return res.status(404).json({
         result: false,
@@ -197,7 +199,11 @@ export const updateReview = async (req, res) => {
       reviewStatus,
     };
     Object.keys(updatedData).forEach((key) => {
-      if (updatedData[key] === undefined || updatedData[key] === null || updatedData[key] === '') {
+      if (
+        updatedData[key] === undefined ||
+        updatedData[key] === null ||
+        updatedData[key] === ''
+      ) {
         delete updatedData[key];
       }
     });
@@ -234,7 +240,12 @@ export const getMyReview = async (req, res) => {
         userId,
         reviewStatus: ReviewStatus.AVAILABLE,
       },
-      include: [{ model: Space }],
+      include: [
+        {
+          model: Space,
+          include: [{ model: Image }], 
+        },
+      ],
     });
     res.status(200).json({
       result: true,

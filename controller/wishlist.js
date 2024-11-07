@@ -1,6 +1,7 @@
+import { Model } from 'sequelize';
 import db from '../models/index.js';
 
-const { User, Wishlist, Space } = db;
+const { User, Wishlist, Space, Image } = db;
 
 //ANCHOR - 찜 등록
 export const addWishlist = async (req, res) => {
@@ -86,11 +87,21 @@ export const getWishlist = async (req, res) => {
     }
     const findWishlist = await Wishlist.findAll({
       where: { userId: findUser.id },
+      include: [
+        {
+          model: Space,
+          include: [
+            {
+              model: Image, // Image 모델을 포함
+            },
+          ],
+        },
+      ],
     });
     res.status(200).json({
       result: true,
       data: findWishlist,
-      message: `${findUser.userName}님의 찜 목록을 조회했습니다.`,
+      // message: `${findUser.userName}님의 찜 목록을 조회했습니다.`,
     });
   } catch (error) {
     res.status(500).json({
