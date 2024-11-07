@@ -21,8 +21,6 @@ const s3 = new AWS.S3({
 
 // 로컬과 s3 구분을 위한 설정
 const isLocal = process.env.NODE_ENV === 'development';
-console.log('🚀 ~ isLocal:', isLocal);
-
 // 이미지 업로드를 위한 multer 설정
 const storage = isLocal
   ? multer.diskStorage({
@@ -55,6 +53,11 @@ export const uploadSpaceImage = upload.array('image', 10);
 
 // s3에 파일 업로드 하는 함수
 const uploadToS3 = (file) => {
+  const bucketName = process.env.AWS_S3_BUCKET_NAME;
+  if (!bucketName) {
+    throw new Error("AWS S3 버킷 이름이 설정되지 않았습니다. 환경 변수를 확인하세요.");
+  }
+  
   const params = {
     Bucket: process.env.AWS_S3_BUCKET_NAME, // S3 버킷 이름
     Key: `images/${Date.now()}-${file.originalname}`, // S3에 저장될 파일 경로
@@ -62,7 +65,6 @@ const uploadToS3 = (file) => {
     ContentType: file.mimetype, // 파일의 MIME 타입
     ACL: 'public-read', // 파일을 공개 읽기 권한으로 설정
   };
-  console.log('🚀 ~ uploadToS3 ~ params.process.env.AWS_S3_BUCKET_NAME:', params.process.env.AWS_S3_BUCKET_NAME);
   return s3.upload(params).promise();
 };
 
