@@ -103,7 +103,7 @@ export const updateRatingBySpace = async (req, res) => {
 
     // 별점 평균 값 공간에 업데이트
     await Space.update(
-      { spaceRating: averageRating },
+      { spaceRating: parseFloat(averageRating) },
       {
         where: { id: spaceId },
       }
@@ -199,11 +199,7 @@ export const updateReview = async (req, res) => {
       reviewStatus,
     };
     Object.keys(updatedData).forEach((key) => {
-      if (
-        updatedData[key] === undefined ||
-        updatedData[key] === null ||
-        updatedData[key] === ''
-      ) {
+      if (updatedData[key] === undefined || updatedData[key] === null || updatedData[key] === '') {
         delete updatedData[key];
       }
     });
@@ -243,7 +239,7 @@ export const getMyReview = async (req, res) => {
       include: [
         {
           model: Space,
-          include: [{ model: Image }], 
+          include: [{ model: Image }],
         },
       ],
     });

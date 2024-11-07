@@ -96,7 +96,7 @@ const SpaceModel = (sequelize) => {
     },
     // 공간 별점 / 별점 총점
     spaceRating: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.DECIMAL(3, 1),
       allowNull: true,
     },
     // 카테고리 ID
