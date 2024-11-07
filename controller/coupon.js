@@ -311,7 +311,7 @@ export const UserCouponIsUsed = async (req, res) => {
     );
     res.status(200).json({
       result: true,
-      message: `"${findUserCoupon.Coupon.couponName}" 쿠폰을 사용했습니다`,
+      // message: `"${findUserCoupon.coupon.couponName}" 쿠폰을 사용했습니다`,
     });
   } catch (error) {
     res.status(500).json({
