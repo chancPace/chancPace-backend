@@ -18,7 +18,7 @@ const s3 = new AWS.S3({
 
 // 로컬과 s3 구분을 위한 설정
 const isLocal = process.env.NODE_ENV === 'development';
-console.log("🚀 ~ isLocal:", isLocal)
+console.log('🚀 ~ isLocal:', isLocal);
 
 // 이미지 업로드를 위한 multer 설정
 const storage = isLocal
@@ -156,9 +156,9 @@ export const addNewSpace = async (req, res) => {
 
     // 이미지 URL 수집
     const imageUrls = isLocal
-      ? req.files.map((file) => file.path)
+      ? req?.files?.map((file) => file.path)
       : await Promise.all(
-          res.files.map(async (file) => {
+          res?.files?.map(async (file) => {
             const s3Response = await uploadToS3(file);
             return s3Response.Location;
           })
