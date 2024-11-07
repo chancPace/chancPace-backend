@@ -158,7 +158,7 @@ export const addNewSpace = async (req, res) => {
     const imageUrls = isLocal
       ? req?.files?.map((file) => file.path)
       : await Promise.all(
-          res?.files?.map(async (file) => {
+          req?.files?.map(async (file) => {
             const s3Response = await uploadToS3(file);
             return s3Response.Location;
           })
