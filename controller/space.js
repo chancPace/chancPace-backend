@@ -55,9 +55,8 @@ export const uploadSpaceImage = upload.array('image', 10);
 const uploadToS3 = (file) => {
   const bucketName = process.env.AWS_S3_BUCKET_NAME;
   if (!bucketName) {
-    throw new Error("AWS S3 버킷 이름이 설정되지 않았습니다. 환경 변수를 확인하세요.");
+    throw new Error('AWS S3 버킷 이름이 설정되지 않았습니다. 환경 변수를 확인하세요.');
   }
-  
   const params = {
     Bucket: process.env.AWS_S3_BUCKET_NAME, // S3 버킷 이름
     Key: `images/${Date.now()}-${file.originalname}`, // S3에 저장될 파일 경로
@@ -371,24 +370,30 @@ export const updateSpace = async (req, res) => {
         transaction: t,
       });
 
-      // 파일 시스템에서 이미지 삭제
-      findSpace.Images.forEach((image) => {
-        if (deleteImageIds.includes(image.id)) {
-          const imagePath = path.join(__dirname, '..', image.imageUrl);
-          if (fs.existsSync(imagePath)) {
-            fs.unlinkSync(imagePath); // 실제 이미지 파일 삭제
+      // 로컬에서 파일 삭제
+      if (isLocal) {
+        findSpace.Images.forEach((image) => {
+          if (deleteImageIds.includes(image.id)) {
+            const imagePath = path.join(__dirname, '..', image.imageUrl);
+            if (fs.existsSync(imagePath)) {
+              fs.unlinkSync(imagePath); // 실제 이미지 파일 삭제
+            }
           }
-        }
-      });
+        });
+      }
     }
 
     // 새로운 이미지가 업로드된 경우 처리
+    let newImageUrls = [];
     if (req.files && req.files.length > 0) {
-      const newImageUrls = req.files.map((file) => file.path);
-      await Promise.all(
-        newImageUrls.map((imageUrl) => Image.create({ imageUrl, spaceId: findSpace.id }, { transaction: t }))
-      );
+      newImageUrls = isLocal
+        ? req.files.map((file) => file.path)
+        : await Promise.all(req.files.map((file) => uploadToS3(file).then((s3Response) => s3Response.Location)));
     }
+
+    await Promise.all(
+      newImageUrls.map((url) => Image.create({ imageUrl: url, spaceId: findSpace.id }, { transaction: t }))
+    );
     //!SECTION
 
     // 수정할 데이터 생성
