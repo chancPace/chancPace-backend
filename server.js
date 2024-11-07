@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import config from './config/config.js';
 
+
 import userRouter from './router/user.js';
 import paymentRouter from './router/payment.js';
 import spaceRouter from './router/space.js';
@@ -55,7 +56,11 @@ db.sequelize
   .then(() => {
     console.log('데이터베이스와 모델 동기화 완료');
     app.listen(PORT, () => {
-      console.log(`서버 실행: http://${HOST}:${PORT}`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`개발 환경 / 서버 실행: http://${HOST}:${PORT}`);
+      } else if (process.env.NODE_ENV === 'production') {
+        console.log(`서버 배포 환경 / 서버 실행: http://${HOST}:${PORT}`);
+      }
     });
   })
   .catch((err) => {

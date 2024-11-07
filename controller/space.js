@@ -3,33 +3,68 @@ import multer from 'multer';
 import jwt from 'jsonwebtoken';
 import { UserRoles, SpaceStatuses } from '../config/enum.js';
 import { Op } from 'sequelize';
+import AWS from 'aws-sdk';
+import fs from 'fs';
+import path from 'path';
+
 const { User, Space, Image, Booking, Payment, Review } = db;
 
-//ANCHOR - 이미지업로드
-const storage = multer.diskStorage({
-  destination: (req, res, cb) => {
-    cb(null, 'uploads/');
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
+// AWS S3 설정
+const s3 = new AWS.S3({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
 });
 
+// 로컬과 s3 구분을 위한 설정
+const isLocal = process.env.NODE_ENV === 'development';
+console.log("🚀 ~ isLocal:", isLocal)
+
+// 이미지 업로드를 위한 multer 설정
+const storage = isLocal
+  ? multer.diskStorage({
+      destination: (req, res, cb) => {
+        cb(null, 'uploads/');
+      },
+      filename: (req, file, cb) => {
+        cb(null, `${Date.now()}-${file.originalname}`);
+      },
+    })
+  : multer.memoryStorage();
+
+// multer 설정/ 파일 사이즈 제한 및 MIME 타입 필터림
 const upload = multer({
   storage,
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
+    // file.mimetype.startsWith('image/') === MIME 타입이 image/로 시작하는 경우
     if (!file.mimetype.startsWith('image/')) {
+      // 이미지 파일이 아니라면 에러를 반환
       return cb(new Error('이미지 파일만 업로드 가능합니다.'));
     }
+    // 이미지 파일인 경우 정상 처리
     cb(null, true);
   },
 });
 
+// 여러 이미지를 업로드 할 수 있게 설정 (최대 10개)
 export const uploadSpaceImage = upload.array('image', 10);
+
+// s3에 파일 업로드 하는 함수
+const uploadToS3 = (file) => {
+  const params = {
+    Bucket: process.env.AWS_S3_BUCKET_NAME, // S3 버킷 이름
+    Key: `images/${Date.now()}-${file.originalname}`, // S3에 저장될 파일 경로
+    Body: file.buffer, // multer로 받은 파일의 버퍼
+    ContentType: file.mimetype, // 파일의 MIME 타입
+    ACL: 'public-read', // 파일을 공개 읽기 권한으로 설정
+  };
+  return s3.upload(params).promise();
+};
 
 //ANCHOR - 공간 등록
 export const addNewSpace = async (req, res) => {
+  // 트랜잭션 시작
   const t = await db.sequelize.transaction();
 
   try {
@@ -44,7 +79,6 @@ export const addNewSpace = async (req, res) => {
       addPrice, // 인원 추가 금액
       amenities, // 편의 시설
       cleanTime, // 청소 시간
-      // spaceStatus, // 공간 상태 (예약 가능 : 예약 불가능)
       isOpen, // 오픈 상태 (사용자에게 보여줄지 안보여줄지)
       minGuests, // 최소인원
       maxGuests, // 최대 인원
@@ -54,7 +88,7 @@ export const addNewSpace = async (req, res) => {
       businessEndTime, //영업종료시간
     } = req.body;
 
-    // Bearer 토큰 추출
+    // 헤더에서 Bearer 토큰 추출
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
       return res.status(401).json({
@@ -63,23 +97,27 @@ export const addNewSpace = async (req, res) => {
       });
     }
 
-    // jwt 디코딩
+    // jwt 디코딩해서 사용자 정보 가져오기
     let jwtUserInfo;
     try {
       jwtUserInfo = jwt.verify(token, process.env.JWT_ACCESS_SECRET);
     } catch (error) {
-      return res.status(401).json({ result: false, message: '유효하지 않은 토큰입니다.' });
+      return res.status(401).json({
+        result: false,
+        message: '유효하지 않은 토큰입니다.',
+      });
     }
-
-    // jwt로 유저 데이터 가져옴
+    // 디코딩 된 이메일 정보로 유저 데이터 가져오기
     const user = await User.findOne({
       where: { email: jwtUserInfo.user.email },
       transaction: t,
     });
-
     // 유저 정보 없으면 return
     if (!user) {
-      return res.status(404).json({ result: false, message: '사용자를 찾을 수 없습니다.' });
+      return res.status(404).json({
+        result: false,
+        message: '사용자를 찾을 수 없습니다.',
+      });
     }
 
     // 유저 계정 권한 확인
@@ -93,13 +131,14 @@ export const addNewSpace = async (req, res) => {
       });
     }
 
-    // 인원수 체크
+    // 최소 인원이 1명 이상인지 체크
     if (minGuests < 1) {
       return res.status(400).json({
         result: false,
         message: '최소 인원이 1명 이상이어야 합니다.',
       });
     }
+    // 최대 인원이 최소 인원보다 크거나 같은지 체크
     if (maxGuests < minGuests) {
       return res.status(400).json({
         result: false,
@@ -116,7 +155,14 @@ export const addNewSpace = async (req, res) => {
     }
 
     // 이미지 URL 수집
-    const imageUrls = req.files.map((file) => file.path);
+    const imageUrls = isLocal
+      ? req.files.map((file) => file.path)
+      : await Promise.all(
+          res.files.map(async (file) => {
+            const s3Response = await uploadToS3(file);
+            return s3Response.Location;
+          })
+        );
 
     const newSpace = await Space.create(
       {
@@ -143,6 +189,7 @@ export const addNewSpace = async (req, res) => {
       { transaction: t }
     );
 
+    // imageUrls 배열을 순회하며 각 이미지를 Image 테이블에 저장
     await Promise.all(
       imageUrls.map((imageUrl) => Image.create({ imageUrl, spaceId: newSpace.id }, { transaction: t }))
     );
