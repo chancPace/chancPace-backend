@@ -6,6 +6,9 @@ import { Op } from 'sequelize';
 import AWS from 'aws-sdk';
 import fs from 'fs';
 import path from 'path';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const { User, Space, Image, Booking, Payment, Review } = db;
 
@@ -59,6 +62,7 @@ const uploadToS3 = (file) => {
     ContentType: file.mimetype, // 파일의 MIME 타입
     ACL: 'public-read', // 파일을 공개 읽기 권한으로 설정
   };
+  console.log('🚀 ~ uploadToS3 ~ params.process.env.AWS_S3_BUCKET_NAME:', params.process.env.AWS_S3_BUCKET_NAME);
   return s3.upload(params).promise();
 };
 
