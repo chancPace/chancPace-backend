@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 
 dotenv.config();
-const {} = db;
+const { User } = db;
 
 const smtpTransport = nodemailer.createTransport({
   // mail 서비스명
@@ -22,6 +22,15 @@ const smtpTransport = nodemailer.createTransport({
 export const sendAuthNumber = async (req, res) => {
   try {
     const { email } = req.body;
+    const findEmail = await User.findOne({
+      where: { email },
+    });
+    if (findEmail) {
+      return res.status(404).json({
+        result: false,
+        message: '중복된 이메일이 존재합니다.',
+      });
+    }
 
     // 6자리 난수 생성
     const authNumber = Math.floor(Math.random() * 888888) + 111111;

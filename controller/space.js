@@ -18,24 +18,13 @@ const s3 = new AWS.S3({
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   region: process.env.AWS_REGION,
 });
-
-// 로컬과 s3 구분을 위한 설정
-const isLocal = process.env.NODE_ENV === 'development';
 // 이미지 업로드를 위한 multer 설정
-const storage = isLocal
-  ? multer.diskStorage({
-      destination: (req, res, cb) => {
-        cb(null, 'uploads/');
-      },
-      filename: (req, file, cb) => {
-        cb(null, `${Date.now()}-${file.originalname}`);
-      },
-    })
-  : multer.memoryStorage();
+const storage = multer.memoryStorage();
 
 // multer 설정/ 파일 사이즈 제한 및 MIME 타입 필터림
 const upload = multer({
   storage,
+  // 파일 사이즈 5MB로 제한
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     // file.mimetype.startsWith('image/') === MIME 타입이 image/로 시작하는 경우
@@ -53,17 +42,11 @@ export const uploadSpaceImage = upload.array('image', 10);
 
 // s3에 파일 업로드 하는 함수
 const uploadToS3 = (file) => {
-  if (isLocal) {
-    console.log('로컬 환경에서 S3 업로드는 실행되지 않습니다.');
-    return;
-  }
   const bucketName = process.env.AWS_S3_BUCKET_NAME;
   if (!bucketName) {
     throw new Error('AWS S3 버킷 이름이 설정되지 않았습니다. 환경 변수를 확인하세요.');
   }
-  if (!file.buffer) {
-    throw new Error('파일 버퍼가 존재하지 않습니다. multer 설정을 확인하세요.');
-  }
+  // s3 업로드 파라미터 설정
   const params = {
     Bucket: bucketName, // S3 버킷 이름
     Key: `images/${Date.now()}-${file.originalname}`, // S3에 저장될 파일 경로
@@ -132,17 +115,6 @@ export const addNewSpace = async (req, res) => {
       });
     }
 
-    // 유저 계정 권한 확인
-    //FIXME - 이거 언제까지 유저도 가능하게 해둠...????????
-    //NOTE - //*******일단 유저도 등록가능하게 수정해놓음********* */
-    const userRole = user.role;
-    if (userRole !== UserRoles.USER && userRole !== UserRoles.ADMIN) {
-      return res.status(403).json({
-        result: false,
-        message: '호스트만 공간등록이 가능합니다.',
-      });
-    }
-
     // 최소 인원이 1명 이상인지 체크
     if (minGuests < 1) {
       return res.status(400).json({
@@ -167,14 +139,13 @@ export const addNewSpace = async (req, res) => {
     }
 
     // 이미지 URL 수집
-    const imageUrls = isLocal
-      ? req.files.map((file) => file.path)
-      : await Promise.all(
-          req.files.map((file) => {
-            const s3Response = uploadToS3(file);
-            return s3Response.Location;
-          })
-        );
+    const imageUrls = await Promise.all(
+      req.files.map(async (file) => {
+        const s3Response = await uploadToS3(file);
+        // s3Response.Location = s3에 업로드 된 이미지 URL
+        return s3Response.Location;
+      })
+    );
 
     const newSpace = await Space.create(
       {
@@ -208,16 +179,13 @@ export const addNewSpace = async (req, res) => {
 
     await t.commit();
 
-    res.status(201).json({
+    res.status(200).json({
       result: true,
       data: newSpace,
       message: '공간 등록이 완료되었습니다.',
     });
   } catch (error) {
     await t.rollback();
-
-    console.error('공간 등록 에러: ', error);
-
     // 에러 처리
     if (error.message === '이미지 파일만 업로드 가능합니다.') {
       return res.status(400).json({
@@ -230,8 +198,11 @@ export const addNewSpace = async (req, res) => {
         message: '파일 크기가 5MB를 초과했습니다.',
       });
     }
-
-    res.status(500).json({ result: false, message: '서버오류', error: error.message });
+    res.status(500).json({
+      result: false,
+      message: '서버오류',
+      error: error.message,
+    });
   }
 };
 
@@ -377,26 +348,14 @@ export const updateSpace = async (req, res) => {
         },
         transaction: t,
       });
-
-      // 로컬에서 파일 삭제
-      if (isLocal) {
-        findSpace.Images.forEach((image) => {
-          if (deleteImageIds.includes(image.id)) {
-            const imagePath = path.join(__dirname, '..', image.imageUrl);
-            if (fs.existsSync(imagePath)) {
-              fs.unlinkSync(imagePath); // 실제 이미지 파일 삭제
-            }
-          }
-        });
-      }
     }
 
     // 새로운 이미지가 업로드된 경우 처리
     let newImageUrls = [];
     if (req.files && req.files.length > 0) {
-      newImageUrls = isLocal
-        ? req.files.map((file) => file.path)
-        : await Promise.all(req.files.map((file) => uploadToS3(file).then((s3Response) => s3Response.Location)));
+      newImageUrls = await Promise.all(
+        req.files.map((file) => uploadToS3(file).then((s3Response) => s3Response.Location))
+      );
     }
 
     await Promise.all(
