@@ -300,3 +300,34 @@ export const getSearchBooking = async (req, res) => {
     });
   }
 };
+
+//ANCHOR - 내가 예약한 예약리스트 전체 조회
+export const getMyBooking = async (req, res) => {
+  try {
+    const { userId } = req.query;
+    const findUser = await User.findOne({
+      where: { id: userId },
+    });
+    if (!findUser) {
+      res.status(404).json({
+        result: false,
+        message: '존재하지 않는 유저입니다.',
+      });
+    }
+    const findBooking = await Booking.findAll({
+      where: { userId: findUser.id },
+      include: [{ model: Space, include: [{ model: Image }] }],
+    });
+    res.status(200).json({
+      result: true,
+      data: findBooking,
+      message: `${findUser.userName}님의 예약리스트를 전체 조회했습니다.`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버 오류',
+      error: error.message,
+    });
+  }
+};

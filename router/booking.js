@@ -4,6 +4,7 @@ import {
   cancelBooking,
   getBooking,
   getBookingBySpace,
+  getMyBooking,
   getOneBooking,
   getSearchBooking,
 } from '../controller/booking.js';
@@ -22,5 +23,7 @@ router.patch('/cancel-booking', cancelBooking);
 router.get('/get-search-booking', getSearchBooking);
 //ANCHOR - 상세 페이지
 router.get('/get-one-booking', getOneBooking);
+//ANCHOR - 내가 예약한 예약리스트 전체 조회
+router.get('/get-my-booking', getMyBooking);
 
 export default router;
