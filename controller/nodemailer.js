@@ -39,7 +39,8 @@ export const sendAuthNumber = async (req, res) => {
     await smtpTransport.sendMail(mailOptions);
     res.status(200).json({
       result: true,
-      data: authNumber,
+      authNumber: authNumber,
+      email: email,
       message: `${email}로 인증 이메일을 성공적으로 전송했습니다.`,
     });
   } catch (error) {
