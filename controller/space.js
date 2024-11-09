@@ -322,8 +322,8 @@ export const updateSpace = async (req, res) => {
       categoryId, //카테고리
       businessStartTime, //영업시작시간
       businessEndTime, //영업종료시간
-      deleteImageIds, // 프론트엔드에서 삭제할 이미지 ID 배열로 받기
     } = req.body;
+
     // 공간의 존재 여부 확인
     const findSpace = await Space.findOne({
       where: { id: spaceId },
@@ -337,18 +337,10 @@ export const updateSpace = async (req, res) => {
       });
     }
 
-    //SECTION -  어떻게 작동하는지 해석해야함
-    // 삭제할 이미지가 있다면 처리
-    if (deleteImageIds && deleteImageIds.length > 0) {
-      // DB에서 이미지 삭제
-      await Image.destroy({
-        where: {
-          id: deleteImageIds,
-          spaceId: findSpace.id, // 해당 공간의 이미지인지 확인
-        },
-        transaction: t,
-      });
-    }
+    await Image.destroy({
+      where: { spaceId },
+      transaction: t,
+    });
 
     // 새로운 이미지가 업로드된 경우 처리
     let newImageUrls = [];
@@ -361,7 +353,6 @@ export const updateSpace = async (req, res) => {
     await Promise.all(
       newImageUrls.map((url) => Image.create({ imageUrl: url, spaceId: findSpace.id }, { transaction: t }))
     );
-    //!SECTION
 
     // 수정할 데이터 생성
     const updatedData = {
