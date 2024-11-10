@@ -1,11 +1,9 @@
 import db from '../models/index.js';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
-import { UserRoles, SpaceStatuses } from '../config/enum.js';
+import { SpaceStatuses } from '../config/enum.js';
 import { Op } from 'sequelize';
 import AWS from 'aws-sdk';
-import fs from 'fs';
-import path from 'path';
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -66,7 +64,8 @@ export const addNewSpace = async (req, res) => {
       spaceAdminName, // 공간 관리자 이름
       spaceAdminPhoneNumber, // 공간 관리자 연락처
       spaceName, // 공간 이름
-      spaceLocation, // 공간 위치
+      spaceLocation, // 공간 주소
+      spaceLocationDetail, // 공간 상세 주소
       description, // 공간 설명
       spacePrice, // 공간 가격
       discount, // 할인 가격
@@ -146,6 +145,7 @@ export const addNewSpace = async (req, res) => {
         return s3Response.Location;
       })
     );
+    console.log("🚀 ~ addNewSpace ~ imageUrls:", imageUrls)
 
     const newSpace = await Space.create(
       {
@@ -153,6 +153,7 @@ export const addNewSpace = async (req, res) => {
         spaceAdminPhoneNumber,
         spaceName,
         spaceLocation,
+        spaceLocationDetail,
         description,
         spacePrice,
         discount,
@@ -307,7 +308,8 @@ export const updateSpace = async (req, res) => {
       spaceAdminName, // 공간 관리자 이름
       spaceAdminPhoneNumber, // 공간 관리자 연락처
       spaceName, // 공간 이름
-      spaceLocation, // 공간 위치
+      spaceLocation, // 공간 주소
+      spaceLocationDetail, // 공간 상세 주소
       description, // 공간 설명
       spacePrice, // 공간 가격
       discount, // 할인 가격
@@ -359,7 +361,8 @@ export const updateSpace = async (req, res) => {
       spaceAdminName, // 공간 관리자 이름
       spaceAdminPhoneNumber, // 공간 관리자 연락처
       spaceName, // 공간 이름
-      spaceLocation, // 공간 위치
+      spaceLocation, // 공간 주소
+      spaceLocationDetail, // 공간 상세 주소
       description, // 공간 설명
       spacePrice, // 공간 가격
       discount, // 할인 가격

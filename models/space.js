@@ -24,10 +24,15 @@ const SpaceModel = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    // 공간 위치
+    // 공간 주소
     spaceLocation: {
       type: DataTypes.STRING,
       allowNull: false,
+    },
+    // 공간 상세 주소
+    spaceLocationDetail: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     // 공간 설명
     description: {

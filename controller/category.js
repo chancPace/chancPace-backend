@@ -135,7 +135,7 @@ export const removeCategory = async (req, res) => {
 export const updateCategory = async (req, res) => {
   try {
     const { categoryId, categoryName, pId } = req.body;
-    const findCategory = await findOne({
+    const findCategory = await Category.findOne({
       where: { id: categoryId },
     });
     if (!findCategory) {
@@ -149,13 +149,17 @@ export const updateCategory = async (req, res) => {
       pId,
     };
     await Category.update(updateCategory, {
-      where: categoryId,
+      where: { id: categoryId },
+    });
+    res.status(200).json({
+      result: true,
+      message: `${findCategory.id}를 수정했습니다.`,
     });
   } catch (error) {
     res.status(500).json({
       result: false,
       message: '서버오류',
-      error,
+      error: error.message,
     });
   }
 };
