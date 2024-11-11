@@ -72,6 +72,7 @@ export const addNewSpace = async (req, res) => {
       addPrice, // 인원 추가 금액
       amenities, // 편의 시설
       cleanTime, // 청소 시간
+      spaceStatus, // 공간 승인여부
       isOpen, // 오픈 상태 (사용자에게 보여줄지 안보여줄지)
       minGuests, // 최소인원
       maxGuests, // 최대 인원
@@ -145,8 +146,6 @@ export const addNewSpace = async (req, res) => {
         return s3Response.Location;
       })
     );
-    console.log("🚀 ~ addNewSpace ~ imageUrls:", imageUrls)
-
     const newSpace = await Space.create(
       {
         spaceAdminName,
@@ -160,7 +159,7 @@ export const addNewSpace = async (req, res) => {
         addPrice,
         amenities,
         cleanTime,
-        spaceStatus: SpaceStatuses.UNAVAILABLE,
+        spaceStatus,
         isOpen,
         minGuests,
         maxGuests,
