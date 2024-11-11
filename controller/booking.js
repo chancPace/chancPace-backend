@@ -1,14 +1,12 @@
 import db from '../models/index.js';
-import { Op } from 'sequelize';
-import { BookingStatuses, UserRoles } from '../config/enum.js';
+import { BookingStatuses } from '../config/enum.js';
 
-const { Booking, User, Space, Payment, Image, Review } = db;
+const { Booking, User, Space, Payment, Image, Review , sequelize} = db;
 
 //ANCHOR - 예약
 export const addBooking = async (req, res) => {
   try {
-    const { startDate, startTime, endTime, userId, spaceId, paymentId } =
-      req.body;
+    const { startDate, startTime, endTime, userId, spaceId, paymentId } = req.body;
     // 유저 존재 조회
     const user = await User.findOne({ where: { id: userId } });
     if (user) {
@@ -17,34 +15,6 @@ export const addBooking = async (req, res) => {
         where: { id: spaceId, spaceStatus: 'AVAILABLE' },
       });
       if (space) {
-        // 겹치는 예약 시간이 존재 하는지 조회
-        // const checkBooking = await Booking.findOne({
-        //   where: {
-        //     spaceId, // 1. 같은 공간일 때
-        //     startDate, // 2. 같은 날짜일 때
-        //     [db.Sequelize.Op.or]: [
-        //       // 3.db에 있는 예약 데이터 중 시작 시간이 새로운 예약 시간 범위에 포함되는 경우
-        //       // 예) 기존 예약 10:00 ~ 12:00, 새로운 예약 11:00 ~ 13:00 == 10시가 새로운 예약 시간에 포함됨
-        //       { startTime: { [db.Sequelize.Op.between]: [startTime, endTime] } },
-        //       // 4. db에 있는 예약 데이터 중 종료 시간이 새로운 예약 시간 범위에 포함되는 경우
-        //       // 예) 기존 예약 10:00 ~ 12:00, 새로운 예약 11:00 ~ 13:00 == 12시가 새로운 예약 시간에 포함됨
-        //       { endTime: { [db.Sequelize.Op.between]: [startTime, endTime] } },
-        //       // 5. db에 있는 예약 데이터 중 시간이 새로운 예약 시간에 완전히 포함되는 경우
-        //       // 예) 기존 예약 10:00 ~ 13:00, 새로운 예약 11:00 ~ 12:00 == 10시부터 13시 모두 포함됨
-        //       {
-        //         startTime: { [db.Sequelize.Op.lte]: startTime },
-        //         endTime: { [db.Sequelize.Op.gte]: endTime },
-        //       },
-        //     ],
-        //   },
-        // });
-        // if (checkBooking) {
-        //   return res.status(409).json({
-        //     result: false,
-        //     message: '이미 해당 시간에 예약이 존재합니다. 다른 시간을 선택해주세요.',
-        //   });
-        // }
-
         // 예약 생성
         const newBooking = await Booking.create({
           startDate,
@@ -94,12 +64,7 @@ export const getBooking = async (req, res) => {
   try {
     const bookingData = await Booking.findAll({
       order: [['createdAt', 'DESC']],
-      include: [
-        { model: Payment },
-        { model: User },
-        { model: Space },
-        { model: Review },
-      ],
+      include: [{ model: Payment }, { model: User }, { model: Space }, { model: Review }],
     });
     res.status(200).json({
       result: true,
@@ -175,65 +140,6 @@ export const cancelBooking = async (req, res) => {
   }
 };
 
-//NOTE - 미 사용 로직
-//ANCHOR - 검색 기능
-// export const getSearchBooking = async (req, res) => {
-//   try {
-//     const { query } = req.query;
-//     if (!query) {
-//       return res.status(400).json({
-//         result: false,
-//         message: '검색어가 필요합니다.',
-//       });
-//     }
-//     const spaceBookings = await Space.findAll({
-//       where: {
-//         spaceName: { [Op.like]: `%${query}%` },
-//       },
-//       include: [
-//         {
-//           model: Booking,
-//           include: [
-//             { model: Space }, // Booking과 연결된 Space 정보
-//             { model: User }, // Booking과 연결된 User 정보
-//             { model: Payment }, // Booking과 연결된 Payment 정보
-//           ],
-//         },
-//       ],
-//     });
-//     const userBookings = await User.findAll({
-//       where: {
-//         userName: { [Op.like]: `%${query}%` },
-//         role: {
-//           [Op.ne]: UserRoles.ADMIN,
-//         },
-//       },
-//       include: [
-//         {
-//           model: Booking,
-//           include: [
-//             { model: Space }, // Booking과 연결된 Space 정보
-//             { model: User }, // Booking과 연결된 User 정보
-//             { model: Payment }, // Booking과 연결된 Payment 정보
-//           ],
-//         },
-//       ],
-//     });
-//     const searchData = [...spaceBookings, ...userBookings];
-//     res.status(200).json({
-//       result: true,
-//       data: searchData,
-//       message: `${query}의 해당하는 예약 목록입니다.`,
-//     });
-//   } catch (error) {
-//     res.status(500).json({
-//       result: false,
-//       message: '서버 오류',
-//       error: error.message,
-//     });
-//   }
-// };
-
 //ANCHOR - 예약 리스트 상세페이지 / 관리자
 export const getOneBooking = async (req, res) => {
   try {
@@ -242,11 +148,7 @@ export const getOneBooking = async (req, res) => {
       where: {
         id: bookingId,
       },
-      include: [
-        { model: User },
-        { model: Space, include: [{ model: Image }] },
-        { model: Payment },
-      ],
+      include: [{ model: User }, { model: Space, include: [{ model: Image }] }, { model: Payment }],
     });
     if (!userBooking) {
       return res.status(404).json({
@@ -278,27 +180,21 @@ export const getSearchBooking = async (req, res) => {
         message: '검색어가 필요합니다.',
       });
     }
-    const findSpace = await Space.findAll({
-      where: {
-        spaceName: { [Op.like]: `%${query}%` },
-      },
-    });
-    const findBookingBySpace = await Booking.findAll({
-      where: { spaceId: findSpace.id },
+
+    const searchQuery = `
+      SELECT bookings.*, users.userName, spaces.spaceName
+      FROM bookings
+      INNER JOIN users ON bookings.userId = users.id
+      INNER JOIN spaces ON bookings.spaceId = spaces.id
+      WHERE users.userName LIKE :query
+        OR spaces.spaceName LIKE :query;
+    `;
+
+    const searchData = await sequelize.query(searchQuery, {
+      replacements: { query: `%${query}%` }, // 검색어를 치환
+      type: sequelize.QueryTypes.SELECT, // 쿼리 유형을 SELECT로 지정
     });
 
-    const findUser = await User.findAll({
-      where: {
-        userName: { [Op.like]: `%${query}%` },
-        role: {
-          [Op.ne]: UserRoles.ADMIN,
-        },
-      },
-    });
-    const findBookingByUser = await Booking.findAll({
-      where: { userId: findUser.id },
-    });
-    const searchData = [...findBookingBySpace, ...findBookingByUser];
     res.status(200).json({
       result: true,
       data: searchData,
