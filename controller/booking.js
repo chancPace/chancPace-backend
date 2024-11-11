@@ -7,12 +7,15 @@ const { Booking, User, Space, Payment, Image, Review } = db;
 //ANCHOR - 예약
 export const addBooking = async (req, res) => {
   try {
-    const { startDate, startTime, endTime, userId, spaceId, paymentId } = req.body;
+    const { startDate, startTime, endTime, userId, spaceId, paymentId } =
+      req.body;
     // 유저 존재 조회
     const user = await User.findOne({ where: { id: userId } });
     if (user) {
       // 공간 존재 조회
-      const space = await Space.findOne({ where: { id: spaceId, spaceStatus: 'AVAILABLE' } });
+      const space = await Space.findOne({
+        where: { id: spaceId, spaceStatus: 'AVAILABLE' },
+      });
       if (space) {
         // 겹치는 예약 시간이 존재 하는지 조회
         // const checkBooking = await Booking.findOne({
@@ -91,7 +94,12 @@ export const getBooking = async (req, res) => {
   try {
     const bookingData = await Booking.findAll({
       order: [['createdAt', 'DESC']],
-      include: [{ model: Payment }, { model: User }, { model: Space }, { model: Review }],
+      include: [
+        { model: Payment },
+        { model: User },
+        { model: Space },
+        { model: Review },
+      ],
     });
     res.status(200).json({
       result: true,
@@ -234,7 +242,11 @@ export const getOneBooking = async (req, res) => {
       where: {
         id: bookingId,
       },
-      include: [{ model: User }, { model: Space, include: [{ model: Image }] }, { model: Payment }],
+      include: [
+        { model: User },
+        { model: Space, include: [{ model: Image }] },
+        { model: Payment },
+      ],
     });
     if (!userBooking) {
       return res.status(404).json({
@@ -316,7 +328,16 @@ export const getMyBooking = async (req, res) => {
     }
     const findBooking = await Booking.findAll({
       where: { userId: findUser.id },
-      include: [{ model: Space, include: [{ model: Image }] }],
+      include: [
+        {
+          model: Space,
+          include: [{ model: Image }],
+        },
+        {
+          model: Review,
+        },
+      ],
+      order: [['createdAt', 'DESC']], // createdAt을 기준으로 최신순 정렬
     });
     res.status(200).json({
       result: true,

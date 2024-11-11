@@ -62,7 +62,7 @@ export const addReview = async (req, res) => {
       res.status(200).json({
         result: true,
         data: newReview,
-        message: `${find.userName}님이 남긴 리뷰가 등록 되었습니다.`,
+        // message: `${find.userName}님이 남긴 리뷰가 등록 되었습니다.`,
       });
     } else {
       return res.status(400).json({
@@ -111,7 +111,7 @@ export const updateRatingBySpace = async (req, res) => {
     res.status(200).json({
       result: true,
       data: averageRating,
-      message: `현재 공간의 별점 평균은 ${averageRating}점 입니다.`,
+      // message: `현재 공간의 별점 평균은 ${averageRating}점 입니다.`,
     });
   } catch (error) {
     res.status(500).json({
@@ -173,6 +173,15 @@ export const getReviewBySpace = async (req, res) => {
           model: User,
           attributes: ['email'],
         },
+        {
+          model: Space, // 리뷰와 연결된 Space 모델 포함
+          include: [
+            {
+              model: Image, // Space 모델 내 Image 모델 포함
+              attributes: ['imageUrl'], // 필요한 속성만 선택 (예: 이미지 URL)
+            },
+          ],
+        },
       ],
     });
     res.status(200).json({
@@ -199,7 +208,11 @@ export const updateReview = async (req, res) => {
       reviewStatus,
     };
     Object.keys(updatedData).forEach((key) => {
-      if (updatedData[key] === undefined || updatedData[key] === null || updatedData[key] === '') {
+      if (
+        updatedData[key] === undefined ||
+        updatedData[key] === null ||
+        updatedData[key] === ''
+      ) {
         delete updatedData[key];
       }
     });
@@ -242,6 +255,7 @@ export const getMyReview = async (req, res) => {
           include: [{ model: Image }],
         },
       ],
+      order: [['createdAt', 'DESC']], // createdAt을 기준으로 최신순 정렬
     });
     res.status(200).json({
       result: true,
