@@ -8,6 +8,7 @@ import {
   getSpace,
   getSpaceByCategory,
   updateSpace,
+  updateSpaceStatus,
   uploadSpaceImage,
 } from '../controller/space.js';
 
@@ -29,5 +30,7 @@ router.patch('/update-space', uploadSpaceImage, updateSpace);
 router.get('/get-one-space', getOneSpace);
 //ANCHOR - 내가 등록한 공간 전체 조회 & 예약목록 조회 / 호스트
 router.get('/get-my-space', getMySpace);
+//ANCHOR - 관리자 공간 승인
+router.patch('/update-space-status', updateSpaceStatus);
 
 export default router;

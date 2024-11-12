@@ -468,3 +468,32 @@ export const getMySpace = async (req, res) => {
     });
   }
 };
+
+//ANCHOR - 관리자 공간 승인
+export const updateSpaceStatus = async (req, res) => {
+  try {
+    const { spaceId, spaceStatus } = req.body;
+    const findSpace = await Space.findOne({
+      where: { id: spaceId },
+    });
+    if (!findSpace) {
+      return res.status(404).json({
+        result: false,
+        message: '존재하지 않는 공간입니다.',
+      });
+    }
+    await Space.update(spaceStatus, {
+      where: { id: findSpace.id },
+    });
+    res.status(200).json({
+      result: true,
+      message: `${findSpace.spaceName}의 공간을 승인을 변경하였습니다.`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버오류',
+      error: error.message,
+    });
+  }
+};

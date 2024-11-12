@@ -1,7 +1,8 @@
 import db from '../models/index.js';
 import { BookingStatuses } from '../config/enum.js';
+import { Op } from 'sequelize';
 
-const { Booking, User, Space, Payment, Image, Review , sequelize} = db;
+const { Booking, User, Space, Payment, Image, Review, sequelize } = db;
 
 //ANCHOR - 예약
 export const addBooking = async (req, res) => {
@@ -180,19 +181,14 @@ export const getSearchBooking = async (req, res) => {
         message: '검색어가 필요합니다.',
       });
     }
-
-    const searchQuery = `
-      SELECT bookings.*, users.userName, spaces.spaceName
-      FROM bookings
-      INNER JOIN users ON bookings.userId = users.id
-      INNER JOIN spaces ON bookings.spaceId = spaces.id
-      WHERE users.userName LIKE :query
-        OR spaces.spaceName LIKE :query;
-    `;
-
-    const searchData = await sequelize.query(searchQuery, {
-      replacements: { query: `%${query}%` }, // 검색어를 치환
-      type: sequelize.QueryTypes.SELECT, // 쿼리 유형을 SELECT로 지정
+    const searchData = await Booking.findAll({
+      where: {
+        [Op.or]: [
+          { '$User.userName$': { [Op.like]: `%${query}%` } },
+          { '$Space.spaceName$': { [Op.like]: `%${query}%` } },
+        ],
+      },
+      include: [{ model: User }, { model: Space }],
     });
 
     res.status(200).json({
