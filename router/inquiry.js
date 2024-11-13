@@ -9,7 +9,7 @@ router.post('/add-inquiry', addInquiry);
 router.get('/get-all-inquiry', getAllInquiry);
 //ANCHOR - 문의 1개 조회
 router.get('/get-one-inquiry', getOneInquiry);
-//ANCHOR - 문의 업데이트
+//ANCHOR - 문의 수정
 router.patch('/update-inquiry', updateInquiry);
 
 export default router;

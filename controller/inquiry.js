@@ -78,7 +78,7 @@ export const getOneInquiry = async (req, res) => {
   }
 };
 
-//ANCHOR - 문의 업데이트
+//ANCHOR - 문의 수정
 export const updateInquiry = async (req, res) => {
   try {
     const { inquiryId, title, email, contents, memberType, inquiryStatus, isDelete } = req.body;
@@ -90,6 +90,7 @@ export const updateInquiry = async (req, res) => {
       inquiryStatus: inquiryStatus,
       isDelete: isDelete,
     };
+    //FIXME - 키:값 비어있으면 업데이트 내용에서 빼게 설정
     await Inquiry.update(updateData, {
       where: { id: inquiryId },
     });
