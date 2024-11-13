@@ -2,11 +2,26 @@ import axios from 'axios';
 import db from '../models/index.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import { PaymentStatuses } from '../config/enum.js';
+import nodemailer from 'nodemailer';
+import { PaymentStatuses, BookingStatuses } from '../config/enum.js';
 
 dotenv.config();
 
-const { Payment, User, Booking, Space } = db;
+const { Payment, User, Booking, Space, Image } = db;
+
+const smtpTransport = nodemailer.createTransport({
+  // mail 서비스명
+  service: process.env.SMTP_SERVICE,
+  auth: {
+    // mail 이메일 주소
+    user: process.env.SMTP_USER,
+    // 해당 이메일 비밀 번호
+    pass: process.env.SMTP_PASSWORD,
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
+});
 
 const TOSS_SECRET_KEY = process.env.TOSS_SECRET_KEY;
 const JWT_ACCESS_SECRET_KEY = process.env.JWT_ACCESS_SECRET;
@@ -146,7 +161,28 @@ export const listUserPayments = async (req, res) => {
 //ANCHOR - 결제 취소
 export const Refund = async (req, res) => {
   try {
-    const { paymentKey, cancelReason } = req.body;
+    const {
+      // 취소를 진행 할 예약
+      bookingId,
+      // 프론트에서 결제 취소 사유 즉, cancelReason를 받아야함
+      // 프론트에서 "고객 요청에 따른 취소" 라고 보내기
+      cancelReason,
+    } = req.body;
+    // 결제 취소할려는 예약을 찾음
+    const findBooking = await Booking.findOne({
+      where: { id: bookingId },
+      include: [{ model: User }, { model: Payment }, { model: Space, include: [{ model: Image }] }],
+    });
+    // 예약이 없다면 리턴
+    if (!findBooking) {
+      return res.status(404).json({
+        result: false,
+        message: '예약이 존재하지 않습니다.',
+      });
+    }
+    // 예약데이터의 결제 paymentKey를 꺼냄
+    const paymentKey = findBooking.payment.dataValues.paymentKey;
+    // paymentKey로 토스에게 결제 취소 요청
     const url = `https://api.tosspayments.com/v1/payments/${paymentKey}/cancel`;
     const options = {
       headers: {
@@ -154,15 +190,81 @@ export const Refund = async (req, res) => {
         'Content-Type': 'application/json',
       },
     };
-    const data = {
-      cancelReason,
-    };
+    const data = { cancelReason };
     const response = await axios.post(url, data, options);
-    res.status(200).json({
-      result: true,
-      data: response.data,
-      message: '결제가 성공적으로 취소되었습니다.',
-    });
+    // 결제취소가 된다면
+    if (response.status === 200) {
+      // 예약 상태 취소로 변경
+      await Booking.update({ bookingStatus: BookingStatuses.CANCELLED }, { where: { id: findBooking.dataValues.id } });
+      // 결제 상태 취소로 변경
+      await Payment.update(
+        { paymentStatus: PaymentStatuses.REFUNDED },
+        { where: { id: findBooking.payment.dataValues.id } }
+      );
+      // 유저 데이터
+      const user = findBooking.user.dataValues;
+      // 공간 데이터
+      const space = findBooking.space.dataValues;
+      // 예약 데이터
+      const booking = findBooking.dataValues;
+      // 결제 상태가 취소된 후에 이메일을 발송
+      const mailOptions = {
+        from: 'chancePace',
+        to: user.email,
+        subject: `[chancePace] ${space.spaceName} 예약 결제가 취소되었습니다.`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+            <h2 style="text-align: center; color: #E53935;">결제 취소 완료</h2>
+            <p>안녕하세요, ${user.userName}님!</p>
+            <p><strong>${space.spaceName}</strong> 공간 예약의 결제가 취소되었습니다. 이용해 주셔서 감사합니다.</p>
+            
+            <div style="text-align: center; margin-top: 20px;">
+              <img src="${space.images[0]?.imageUrl}" alt="${space.spaceName} 이미지" style="width: 100%; max-width: 400px; border-radius: 10px;"/>
+            </div>
+            
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+              <tr>
+                <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">이용 공간</th>
+                <td style="padding: 8px;">${space.spaceName}</td>
+              </tr>
+              <tr>
+                <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">예약 날짜</th>
+                <td style="padding: 8px;">${booking.startDate}</td>
+              </tr>
+              <tr>
+                <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">이용 시간</th>
+                <td style="padding: 8px;">${booking.startTime}시 - ${booking.endTime}시</td>
+              </tr>
+              <tr>
+                <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">취소 사유</th>
+                <td style="padding: 8px;">${cancelReason}</td>
+              </tr>
+            </table>
+      
+            <p style="margin-top: 20px;">결제 취소와 관련하여 궁금한 사항이 있으시면 언제든지 문의해 주세요!</p>
+            <p>감사합니다.<br><strong>chancePace</strong> 팀 드림</p>
+      
+            <hr style="margin-top: 30px; border: 0; border-top: 1px solid #ddd;">
+            <p style="font-size: 0.9em; color: #555;">
+              본 메일은 발신 전용입니다. 회신은 처리되지 않습니다.
+            </p>
+          </div>
+        `,
+      };
+
+      await smtpTransport.sendMail(mailOptions);
+
+      res.status(200).json({
+        result: true,
+        data: response.data,
+        message: '결제가 성공적으로 취소되었습니다.',
+      });
+    } else {
+      return res.status(400).json({
+        return: false,
+        message: '결제취소 실패',
+      });
+    }
   } catch (error) {
     return res.status(500).json({
       result: false,

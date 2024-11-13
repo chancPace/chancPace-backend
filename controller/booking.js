@@ -29,6 +29,7 @@ export const addBooking = async (req, res) => {
       // 공간 존재 조회
       const space = await Space.findOne({
         where: { id: spaceId, spaceStatus: 'AVAILABLE' },
+        include: [{ model: Image }],
       });
       if (space) {
         // 예약 생성
@@ -45,37 +46,41 @@ export const addBooking = async (req, res) => {
           const mailOptions = {
             from: 'chancePace',
             to: user.email,
-            subject: `[chancePace] ${space.spaceName}의 예약 성공 메일`,
+            subject: `[chancePace] ${space.spaceName} 예약을 성공했습니다.`,
             html: `
-          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
-            <h2 style="text-align: center; color: #4CAF50;">예약 성공!</h2>
-            <p>안녕하세요, ${user.email}님!</p>
-            <p><strong>${space.spaceName}</strong> 공간 예약이 성공적으로 완료되었습니다. 이용해 주셔서 감사합니다.</p>
-      
-            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-              <tr>
-                <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">이용 공간</th>
-                <td style="padding: 8px;">${space.spaceName}</td>
-              </tr>
-              <tr>
-                <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">예약 날짜</th>
-                <td style="padding: 8px;">${startDate}</td>
-              </tr>
-              <tr>
-                <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">이용 시간</th>
-                <td style="padding: 8px;">${startTime}시 - ${endTime}시</td>
-              </tr>
-            </table>
-      
-            <p style="margin-top: 20px;">궁금한 사항이 있으시면 언제든지 문의해 주세요!</p>
-            <p>감사합니다.<br><strong>chancePace</strong> 팀 드림</p>
-      
-            <hr style="margin-top: 30px; border: 0; border-top: 1px solid #ddd;">
-            <p style="font-size: 0.9em; color: #555;">
-              본 메일은 발신 전용입니다. 회신은 처리되지 않습니다.
-            </p>
-          </div>
-        `,
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+                <h2 style="text-align: center; color: #4CAF50;">예약 성공!</h2>
+                <p>안녕하세요, ${user.userName}님!</p>
+                <p><strong>${space.spaceName}</strong> 공간 예약이 성공적으로 완료되었습니다. 이용해 주셔서 감사합니다.</p>
+                
+                <div style="text-align: center; margin-top: 20px;">
+                  <img src="${space.images[0]?.imageUrl}" alt="${space.spaceName} 이미지" style="width: 100%; max-width: 400px; border-radius: 10px;"/>
+                </div>
+                
+                <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                  <tr>
+                    <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">이용 공간</th>
+                    <td style="padding: 8px;">${space.spaceName}</td>
+                  </tr>
+                  <tr>
+                    <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">예약 날짜</th>
+                    <td style="padding: 8px;">${startDate}</td>
+                  </tr>
+                  <tr>
+                    <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">이용 시간</th>
+                    <td style="padding: 8px;">${startTime}시 - ${endTime}시</td>
+                  </tr>
+                </table>
+          
+                <p style="margin-top: 20px;">궁금한 사항이 있으시면 언제든지 문의해 주세요!</p>
+                <p>감사합니다.<br><strong>chancePace</strong> 팀 드림</p>
+          
+                <hr style="margin-top: 30px; border: 0; border-top: 1px solid #ddd;">
+                <p style="font-size: 0.9em; color: #555;">
+                  본 메일은 발신 전용입니다. 회신은 처리되지 않습니다.
+                </p>
+              </div>
+            `,
           };
 
           await smtpTransport.sendMail(mailOptions);
