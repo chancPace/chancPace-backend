@@ -40,4 +40,14 @@ export const BookingStatuses = {
 export const ReviewStatus = {
   AVAILABLE: 'AVAILABLE',
   UNAVAILABLE: 'UNAVAILABLE',
-}
+};
+
+//ANCHOR - Inquiry
+export const MemberType = {
+  MEMBER: 'MEMBER',
+  NONMEMBER: 'NONMEMBER',
+};
+export const InquiryStatus = {
+  COMPLETED: 'COMPLETED',
+  UNCOMPLETED: 'UNCOMPLETED',
+};

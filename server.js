@@ -13,6 +13,7 @@ import bookingRouter from './router/booking.js';
 import reviewRouter from './router/review.js';
 import wishlistRouter from './router/wishlist.js';
 import nodemailerRouter from './router/nodemailer.js';
+import inquiryRouter from './router/inquiry.js';
 
 dotenv.config();
 
@@ -49,6 +50,7 @@ app.use('/api/booking', bookingRouter);
 app.use('/api/review', reviewRouter);
 app.use('/api/wishlist', wishlistRouter);
 app.use('/api/nodemailer', nodemailerRouter);
+app.use('/api/inquiry', inquiryRouter);
 
 db.sequelize
   //NOTE -  alter: true / 데이터 유지하고 구조만 업데이트
