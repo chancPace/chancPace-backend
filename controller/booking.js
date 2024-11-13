@@ -1,8 +1,23 @@
 import db from '../models/index.js';
 import { BookingStatuses } from '../config/enum.js';
+import nodemailer from 'nodemailer';
 import { Op } from 'sequelize';
 
-const { Booking, User, Space, Payment, Image, Review, sequelize } = db;
+const { Booking, User, Space, Payment, Image, Review } = db;
+
+const smtpTransport = nodemailer.createTransport({
+  // mail 서비스명
+  service: process.env.SMTP_SERVICE,
+  auth: {
+    // mail 이메일 주소
+    user: process.env.SMTP_USER,
+    // 해당 이메일 비밀 번호
+    pass: process.env.SMTP_PASSWORD,
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
+});
 
 //ANCHOR - 예약
 export const addBooking = async (req, res) => {
@@ -27,6 +42,44 @@ export const addBooking = async (req, res) => {
           paymentId,
         });
         if (newBooking) {
+          const mailOptions = {
+            from: 'chancePace',
+            to: user.email,
+            subject: `[chancePace] ${space.spaceName}의 예약 성공 메일`,
+            html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;">
+            <h2 style="text-align: center; color: #4CAF50;">예약 성공!</h2>
+            <p>안녕하세요, ${user.email}님!</p>
+            <p><strong>${space.spaceName}</strong> 공간 예약이 성공적으로 완료되었습니다. 이용해 주셔서 감사합니다.</p>
+      
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+              <tr>
+                <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">이용 공간</th>
+                <td style="padding: 8px;">${space.spaceName}</td>
+              </tr>
+              <tr>
+                <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">예약 날짜</th>
+                <td style="padding: 8px;">${startDate}</td>
+              </tr>
+              <tr>
+                <th style="text-align: left; padding: 8px; background-color: #f2f2f2;">이용 시간</th>
+                <td style="padding: 8px;">${startTime}시 - ${endTime}시</td>
+              </tr>
+            </table>
+      
+            <p style="margin-top: 20px;">궁금한 사항이 있으시면 언제든지 문의해 주세요!</p>
+            <p>감사합니다.<br><strong>chancePace</strong> 팀 드림</p>
+      
+            <hr style="margin-top: 30px; border: 0; border-top: 1px solid #ddd;">
+            <p style="font-size: 0.9em; color: #555;">
+              본 메일은 발신 전용입니다. 회신은 처리되지 않습니다.
+            </p>
+          </div>
+        `,
+          };
+
+          await smtpTransport.sendMail(mailOptions);
+
           return res.status(200).json({
             result: true,
             data: newBooking,
