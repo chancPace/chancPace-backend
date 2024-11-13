@@ -474,9 +474,12 @@ export const updateSpaceStatus = async (req, res) => {
         message: '존재하지 않는 공간입니다.',
       });
     }
-    await Space.update(spaceStatus, {
-      where: { id: findSpace.id },
-    });
+    await Space.update(
+      { spaceStatus: spaceStatus },
+      {
+        where: { id: findSpace.id },
+      }
+    );
     res.status(200).json({
       result: true,
       message: `${findSpace.spaceName}의 공간을 승인을 변경하였습니다.`,
