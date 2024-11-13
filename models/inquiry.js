@@ -16,12 +16,12 @@ const InquiryModel = (sequelize) => {
     },
     // 이메일
     inquiryEmail: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     // 문의 내용
     inquiryContents: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     // 회원 타입 (회원 / 비회원)
