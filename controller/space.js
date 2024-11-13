@@ -81,7 +81,6 @@ export const addNewSpace = async (req, res) => {
       businessStartTime, //영업시작시간
       businessEndTime, //영업종료시간
     } = req.body;
-
     // 헤더에서 Bearer 토큰 추출
     const token = req.headers.authorization?.split(' ')[1];
     if (!token) {
@@ -120,13 +119,6 @@ export const addNewSpace = async (req, res) => {
       return res.status(400).json({
         result: false,
         message: '최소 인원이 1명 이상이어야 합니다.',
-      });
-    }
-    // 최대 인원이 최소 인원보다 크거나 같은지 체크
-    if (maxGuests < minGuests) {
-      return res.status(400).json({
-        result: false,
-        message: '최대 인원은 최소인원보다 크거나 같아야 합니다.',
       });
     }
 
