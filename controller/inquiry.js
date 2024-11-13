@@ -9,10 +9,10 @@ export const addInquiry = async (req, res) => {
     const { title, email, contents, memberType } = req.body;
 
     await Inquiry.create({
-      title,
-      email,
-      contents,
-      memberType,
+      inquiryTitle: title,
+      inquiryEmail: email,
+      inquiryContents: contents,
+      memberType: memberType,
     });
     res.status(200).json({
       result: true,
@@ -83,12 +83,12 @@ export const updateInquiry = async (req, res) => {
   try {
     const { inquiryId, title, email, contents, memberType, inquiryStatus, isDelete } = req.body;
     const updateData = {
-      title,
-      email,
-      contents,
-      memberType,
-      inquiryStatus,
-      isDelete,
+      inquiryTitle: title,
+      inquiryEmail: email,
+      inquiryContents: contents,
+      memberType: memberType,
+      inquiryStatus: inquiryStatus,
+      isDelete: isDelete,
     };
     await Inquiry.update(updateData, {
       where: { id: inquiryId },
