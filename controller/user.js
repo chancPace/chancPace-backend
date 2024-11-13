@@ -73,7 +73,6 @@ export const login = async (req, res) => {
         accountStatus: AccountStatuses.ACTIVE,
       },
     });
-
     if (find) {
       const decryption = await bcrypt.compare(password, find.password);
 

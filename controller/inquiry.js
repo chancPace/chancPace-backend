@@ -82,7 +82,7 @@ export const getOneInquiry = async (req, res) => {
 export const updateInquiry = async (req, res) => {
   try {
     const { inquiryId, title, email, contents, memberType, inquiryStatus, isDelete } = req.body;
-    const updateData = {
+    const updatedData = {
       inquiryTitle: title,
       inquiryEmail: email,
       inquiryContents: contents,
@@ -90,8 +90,13 @@ export const updateInquiry = async (req, res) => {
       inquiryStatus: inquiryStatus,
       isDelete: isDelete,
     };
-    //FIXME - 키:값 비어있으면 업데이트 내용에서 빼게 설정
-    await Inquiry.update(updateData, {
+    // 값이 없다면 키를 삭제 시킴
+    Object.keys(updatedData).forEach((key) => {
+      if (updatedData[key] === undefined || updatedData[key] === null || updatedData[key] === '') {
+        delete updatedData[key];
+      }
+    });
+    await Inquiry.update(updatedData, {
       where: { id: inquiryId },
     });
     res.status(200).json({
