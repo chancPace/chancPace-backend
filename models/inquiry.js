@@ -33,6 +33,7 @@ const InquiryModel = (sequelize) => {
     inquiryStatus: {
       type: DataTypes.ENUM(InquiryStatus.COMPLETED, InquiryStatus.UNCOMPLETED),
       allowNull: false,
+      defaultValue: InquiryStatus.UNCOMPLETED,
     },
     // 삭제
     isDelete: {
