@@ -166,7 +166,7 @@ export const sendCoupon = async (req, res) => {
 
     // 각 사용자에게 쿠폰 발급
     for (const id of userId) {
-      const findUser = await User.findOne({ where: { id } });
+      const findUser = await User.findOne({ where: { id: id.value } });
       if (!findUser) {
         failedUsers.push(id);
         continue; // 사용자 찾기 실패 시 다음 사용자로 넘어감
@@ -180,11 +180,10 @@ export const sendCoupon = async (req, res) => {
         couponCode: newCouponCode,
         expirationDate: new Date(expirationDate),
         isUsed: false,
-        userId: id, // 각 사용자에게 발급
+        userId: id.value, // 각 사용자에게 발급
         couponId,
       });
-
-      successfulUsers.push({ userId: id, coupon: addUserCoupon });
+      successfulUsers.push({ userId: id.value, coupon: addUserCoupon });
     }
 
     // 결과 응답
@@ -197,12 +196,19 @@ export const sendCoupon = async (req, res) => {
       message: `${successfulUsers.length}명에게 쿠폰이 발급되었습니다. ${failedUsers.length}명의 사용자에게는 쿠폰 발급에 실패했습니다.`,
     });
   } catch (error) {
-    console.error('Error details:', error);
-    res.status(500).json({
-      result: false,
-      message: '서버 에러',
-      error: error.message,
-    });
+    if (error.parent.code === 'ER_DUP_ENTRY') {
+      res.status(400).json({
+        result: false,
+        message: '이미 발급받은 쿠폰이 있습니다.',
+        errorCode: error.code,
+      });
+    } else {
+      res.status(500).json({
+        result: false,
+        message: '서버 에러',
+        error: error.message,
+      });
+    }
   }
 };
 
