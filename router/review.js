@@ -34,6 +34,6 @@ router.patch('/update-review', updateReview);
 router.get('/get-my-review', getMyReview);
 
 //ANCHOR - 리뷰 상세페이지
-router.get('/get-my-review', getOneReview);
+router.get('/get-one-review', getOneReview);
 
 export default router;

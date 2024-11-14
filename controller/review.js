@@ -295,7 +295,7 @@ export const getAllReviewAdmin = async (req, res) => {
 //ANCHOR - 리뷰 상세페이지
 export const getOneReview = async (req, res) => {
   try {
-    const { reviewId } = req.body;
+    const { reviewId } = req.query;
     const findReview = Review.findOne({
       where: { id: reviewId, reviewStatus: ReviewStatus.AVAILABLE },
     });
