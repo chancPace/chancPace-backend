@@ -113,6 +113,12 @@ const SpaceModel = (sequelize) => {
         key: 'id',
       },
     },
+    // 삭제
+    isDelete: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     // 유저 ID
     userId: {
       type: DataTypes.INTEGER,

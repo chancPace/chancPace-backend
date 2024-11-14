@@ -8,6 +8,7 @@ import {
   login,
   signup,
   updateMyProfile,
+  updatePassword,
   updateUser,
 } from '../controller/user.js';
 
@@ -31,5 +32,7 @@ router.patch('/update-my-profile', updateMyProfile);
 router.get('/get-one-user', getOneUser);
 //ANCHOR - 검색 기능 / 관리자
 router.get('/get-search-user', getSearchUser);
+//ANCHOR - 비밀번호 변경
+router.patch('/update-password',updatePassword)
 
 export default router;

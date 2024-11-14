@@ -48,6 +48,12 @@ const ReviewModel = (sequelize) => {
         key: 'id',
       },
     },
+    // 삭제
+    isDelete: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
     bookingId: {
       type: DataTypes.INTEGER,
       allowNull: false,

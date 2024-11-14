@@ -325,6 +325,7 @@ export const updateSpace = async (req, res) => {
       categoryId, //카테고리
       businessStartTime, //영업시작시간
       businessEndTime, //영업종료시간
+      isDelete // 삭제 여부
     } = req.body;
 
     // 공간의 존재 여부 확인
@@ -385,6 +386,7 @@ export const updateSpace = async (req, res) => {
       categoryId, //카테고리
       businessStartTime, //영업시작시간
       businessEndTime, //영업종료시간
+      isDelete // 삭제 여부
     };
 
     // 값이 없다면 키를 삭제 시킴

@@ -356,6 +356,7 @@ export const updateMyProfile = async (req, res) => {
   }
 };
 
+//ANCHOR - 유저 정보 조회 / 관리자
 export const getOneUser = async (req, res) => {
   try {
     const { userId } = req.query;
@@ -401,6 +402,42 @@ export const getSearchUser = async (req, res) => {
       result: true,
       data: users,
       message: `${query}가 포함된 유저 목록입니다.`,
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버오류',
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 비밀번호 변경 / 이메일
+export const updatePassword = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const findUser = await User.findOne({
+      where: { email },
+    });
+    if (!findUser) {
+      return res.status(404).json({
+        result: false,
+        message: '존재하지 않는 유저입니다.',
+      });
+    }
+
+    const encryption = await bcrypt.hash(password, 10);
+
+    const updatedPassword = User.update(
+      { password: encryption },
+      {
+        where: { id: findUser.id },
+      }
+    );
+    res.status(200).json({
+      result: true,
+      data: updatedPassword,
+      message: '비밀번호가 변경되었습니다.',
     });
   } catch (error) {
     res.status(500).json({
