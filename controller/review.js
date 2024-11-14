@@ -291,3 +291,30 @@ export const getAllReviewAdmin = async (req, res) => {
     });
   }
 };
+
+//ANCHOR - 리뷰 상세페이지
+export const getOneReview = async (req, res) => {
+  try {
+    const { reviewId } = req.body;
+    const findReview = Review.findOne({
+      where: { id: reviewId, reviewStatus: ReviewStatus.AVAILABLE },
+    });
+    if (!findReview) {
+      return res.status(404).json({
+        result: false,
+        message: '존재하지 않는 리뷰입니다.',
+      });
+    }
+    res.status(200).json({
+      result: true,
+      data: findReview,
+      message: '리뷰 조회에 성공했습니다.',
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버 오류',
+      error: error.message,
+    });
+  }
+};

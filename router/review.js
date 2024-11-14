@@ -7,6 +7,7 @@ import {
   updateRatingBySpace,
   updateReview,
   getAllReviewAdmin,
+  getOneReview,
 } from '../controller/review.js';
 
 const router = express.Router();
@@ -31,5 +32,8 @@ router.patch('/update-review', updateReview);
 
 //ANCHOR - 내가 작성한 리뷰 조회
 router.get('/get-my-review', getMyReview);
+
+//ANCHOR - 리뷰 상세페이지
+router.get('/get-my-review', getOneReview);
 
 export default router;
