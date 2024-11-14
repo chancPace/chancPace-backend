@@ -208,11 +208,7 @@ export const updateReview = async (req, res) => {
       reviewStatus,
     };
     Object.keys(updatedData).forEach((key) => {
-      if (
-        updatedData[key] === undefined ||
-        updatedData[key] === null ||
-        updatedData[key] === ''
-      ) {
+      if (updatedData[key] === undefined || updatedData[key] === null || updatedData[key] === '') {
         delete updatedData[key];
       }
     });
@@ -261,6 +257,31 @@ export const getMyReview = async (req, res) => {
       result: true,
       data: myAllReview,
       message: '내가 작성한 리뷰 조회 성공',
+    });
+  } catch (error) {
+    res.status(500).json({
+      result: false,
+      message: '서버 오류',
+      error: error.message,
+    });
+  }
+};
+
+//ANCHOR - 리뷰 전체 조회 - 관리자
+export const getAllReviewAdmin = async (req, res) => {
+  try {
+    const allReview = await Review.findAll({
+      include: [
+        {
+          model: User,
+        },
+        { model: Space },
+      ],
+    });
+    res.status(200).json({
+      result: true,
+      data: allReview,
+      message: '전체 리뷰를 조회했습니다.',
     });
   } catch (error) {
     res.status(500).json({

@@ -6,6 +6,7 @@ import {
   getReviewBySpace,
   updateRatingBySpace,
   updateReview,
+  getAllReviewAdmin,
 } from '../controller/review.js';
 
 const router = express.Router();
@@ -18,6 +19,9 @@ router.patch('/update-rating-by-space', updateRatingBySpace);
 
 //ANCHOR - 리뷰 전체 조회
 router.get('/get-all-review', getAllReview);
+
+//ANCHOR - 리뷰 전체 조회-관리자
+router.get('/get-all-review-admin', getAllReviewAdmin);
 
 //ANCHOR - 공간 리뷰 전체 조회 / 최신순
 router.get('/get-review-by-space', getReviewBySpace);
