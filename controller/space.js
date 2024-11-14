@@ -42,7 +42,9 @@ export const uploadSpaceImage = upload.array('image', 10);
 const uploadToS3 = (file) => {
   const bucketName = process.env.AWS_S3_BUCKET_NAME;
   if (!bucketName) {
-    throw new Error('AWS S3 버킷 이름이 설정되지 않았습니다. 환경 변수를 확인하세요.');
+    throw new Error(
+      'AWS S3 버킷 이름이 설정되지 않았습니다. 환경 변수를 확인하세요.'
+    );
   }
   // s3 업로드 파라미터 설정
   const params = {
@@ -166,7 +168,9 @@ export const addNewSpace = async (req, res) => {
 
     // imageUrls 배열을 순회하며 각 이미지를 Image 테이블에 저장
     await Promise.all(
-      imageUrls.map((imageUrl) => Image.create({ imageUrl, spaceId: newSpace.id }, { transaction: t }))
+      imageUrls.map((imageUrl) =>
+        Image.create({ imageUrl, spaceId: newSpace.id }, { transaction: t })
+      )
     );
 
     await t.commit();
@@ -203,7 +207,10 @@ export const getSpace = async (req, res) => {
   try {
     const spaces = await Space.findAll({
       order: [['createdAt', 'DESC']],
-      include: [{ model: Image }],
+      include: [
+        { model: Image },
+        { model: Booking }, // Booking 모델 추가
+      ],
     });
     res.status(200).json({
       result: true,
@@ -271,7 +278,10 @@ export const getSearchSpace = async (req, res) => {
     const spaces = await Space.findAll({
       where: {
         spaceStatus: SpaceStatuses.AVAILABLE,
-        [Op.or]: [{ spaceName: { [Op.like]: `%${query}%` } }, { spaceLocation: { [Op.like]: `%${query}%` } }],
+        [Op.or]: [
+          { spaceName: { [Op.like]: `%${query}%` } },
+          { spaceLocation: { [Op.like]: `%${query}%` } },
+        ],
       },
       include: [{ model: Image }, { model: User, attributes: ['userName'] }],
     });
@@ -339,12 +349,19 @@ export const updateSpace = async (req, res) => {
     let newImageUrls = [];
     if (req.files && req.files.length > 0) {
       newImageUrls = await Promise.all(
-        req.files.map((file) => uploadToS3(file).then((s3Response) => s3Response.Location))
+        req.files.map((file) =>
+          uploadToS3(file).then((s3Response) => s3Response.Location)
+        )
       );
     }
 
     await Promise.all(
-      newImageUrls.map((url) => Image.create({ imageUrl: url, spaceId: findSpace.id }, { transaction: t }))
+      newImageUrls.map((url) =>
+        Image.create(
+          { imageUrl: url, spaceId: findSpace.id },
+          { transaction: t }
+        )
+      )
     );
 
     // 수정할 데이터 생성
@@ -372,7 +389,11 @@ export const updateSpace = async (req, res) => {
 
     // 값이 없다면 키를 삭제 시킴
     Object.keys(updatedData).forEach((key) => {
-      if (updatedData[key] === undefined || updatedData[key] === null || updatedData[key] === '') {
+      if (
+        updatedData[key] === undefined ||
+        updatedData[key] === null ||
+        updatedData[key] === ''
+      ) {
         delete updatedData[key];
       }
     });
@@ -437,7 +458,10 @@ export const getMySpace = async (req, res) => {
       where: { userId },
       include: [
         { model: Image },
-        { model: Booking, include: [{ model: User, include: [{ model: Payment }] }] },
+        {
+          model: Booking,
+          include: [{ model: User, include: [{ model: Payment }] }],
+        },
         { model: Review, include: [{ model: User }] },
       ],
     });
