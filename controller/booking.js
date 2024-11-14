@@ -115,6 +115,8 @@ export const addBooking = async (req, res) => {
       message: '서버 오류',
       error: error.message,
     });
+  } finally {
+    smtpTransport.close();
   }
 };
 
