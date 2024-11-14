@@ -63,11 +63,6 @@ const PaymentModel = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    // 결제한 유저 ID
-    userId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-    },
     // 유저 ID
     userId: {
       type: DataTypes.INTEGER,
