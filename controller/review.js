@@ -296,8 +296,14 @@ export const getAllReviewAdmin = async (req, res) => {
 export const getOneReview = async (req, res) => {
   try {
     const { reviewId } = req.query;
-    const findReview = Review.findOne({
+    const findReview = await Review.findOne({
       where: { id: reviewId, reviewStatus: ReviewStatus.AVAILABLE },
+      include: [
+        {
+          model: User,
+        },
+        { model: Space },
+      ],
     });
     if (!findReview) {
       return res.status(404).json({
