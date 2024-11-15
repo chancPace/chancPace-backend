@@ -12,14 +12,15 @@ const smtpTransport = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   // mail port
   port: process.env.SMTP_PORT,
+  secure: false,
+  logger: true,
+  debug: true,
+  ignoreTLS: true,
   auth: {
     // mail 이메일 주소
     user: process.env.SMTP_USER,
     // 해당 이메일 비밀 번호
     pass: process.env.SMTP_PASSWORD,
-  },
-  tls: {
-    rejectUnauthorized: false,
   },
 });
 
