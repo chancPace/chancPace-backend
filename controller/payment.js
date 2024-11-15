@@ -12,10 +12,10 @@ const { Payment, User, Booking, Space, Image } = db;
 const smtpTransport = nodemailer.createTransport({
   // mail 서비스명
   service: process.env.SMTP_SERVICE,
-  // mail host
-  host: process.env.SMTP_HOST,
   // mail port
   port: process.env.SMTP_PORT,
+  secure: true,
+  secureConnection: false,
   auth: {
     // mail 이메일 주소
     user: process.env.SMTP_USER,
@@ -23,7 +23,7 @@ const smtpTransport = nodemailer.createTransport({
     pass: process.env.SMTP_PASSWORD,
   },
   tls: {
-    rejectUnauthorized: false,
+    rejectUnAuthorized: true,
   },
 });
 
