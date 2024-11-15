@@ -10,7 +10,8 @@ const smtpTransport = nodemailer.createTransport({
   service: process.env.SMTP_SERVICE,
   // mail port
   port: process.env.SMTP_PORT,
-  secure: false,
+  secure: true,
+  secureConnection: false,
   auth: {
     // mail 이메일 주소
     user: process.env.SMTP_USER,
@@ -18,7 +19,7 @@ const smtpTransport = nodemailer.createTransport({
     pass: process.env.SMTP_PASSWORD,
   },
   tls: {
-    rejectUnauthorized: false, // 인증서 관련 오류 무시
+    rejectUnAuthorized: true,
   },
 });
 
