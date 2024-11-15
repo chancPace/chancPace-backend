@@ -61,8 +61,6 @@ export const sendAuthNumber = async (req, res) => {
       message: `${req.body.email}로 인증 이메일 전송에 실패했습니다.`,
       error: error.message,
     });
-  } finally {
-    smtpTransport.close();
   }
 };
 
@@ -105,7 +103,5 @@ export const findPassword = async (req, res) => {
       message: `${req.body.email}로 인증 이메일 전송에 실패했습니다.`,
       error: error.message,
     });
-  } finally {
-    smtpTransport.close();
   }
 };

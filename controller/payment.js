@@ -271,8 +271,6 @@ export const Refund = async (req, res) => {
       message: '결제 취소 요청에 실패했습니다.',
       error: error.message,
     });
-  } finally {
-    smtpTransport.close();
   }
 };
 
