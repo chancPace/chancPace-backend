@@ -12,17 +12,16 @@ const { Payment, User, Booking, Space, Image } = db;
 const smtpTransport = nodemailer.createTransport({
   // mail 서비스명
   service: process.env.SMTP_SERVICE,
-  port: 465,
-  secure: true, // TLS 대신 SSL을 사용
+  port: 587,
   auth: {
     // mail 이메일 주소
     user: process.env.SMTP_USER,
     // 해당 이메일 비밀 번호
     pass: process.env.SMTP_PASSWORD,
   },
-  // tls: {
-  //   rejectUnauthorized: false,
-  // },
+  tls: {
+    rejectUnauthorized: false,
+  },
 });
 
 const TOSS_SECRET_KEY = process.env.TOSS_SECRET_KEY;
