@@ -58,7 +58,7 @@ db.sequelize
   .sync({ force: false })
   .then(() => {
     console.log('데이터베이스와 모델 동기화 완료');
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       if (process.env.NODE_ENV === 'development') {
         console.log(`개발 환경 / 서버 실행: http://${HOST}:${PORT}`);
       } else if (process.env.NODE_ENV === 'production') {
