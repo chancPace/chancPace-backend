@@ -1,3 +1,6 @@
+import dotenv from 'dotenv';
+dotenv.config();
+
 const config = {
   development: {
     username: process.env.DB_USERNAME_LOCAL,
@@ -16,3 +19,5 @@ const config = {
     dialect: 'mysql',
   },
 };
+
+export default config;
