@@ -210,6 +210,8 @@ export const updateUser = async (req, res) => {
       accountStatus,
       isMarketingAgreed,
     } = req.body;
+    console.log('🚀 ~ updateUser ~ password:', password);
+    console.log('🚀 ~ updateUser ~ req.body:', req.body);
 
     const user = await User.findOne({ where: { id } });
     if (!user) {
@@ -237,7 +239,8 @@ export const updateUser = async (req, res) => {
       updatedData.password = await bcrypt.hash(password, 10);
     }
 
-    await updateUserData(id, updatedData);
+    const a = await updateUserData(id, updatedData);
+    console.log("🚀 ~ updateUser ~ a:", a)
     res.status(200).json({
       result: true,
       message: `${user.email}님의 정보가 업데이트 되었습니다.`,
