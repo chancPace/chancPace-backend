@@ -273,8 +273,14 @@ export const getSearchSpace = async (req, res) => {
     const { query } = req.query;
     const spaces = await Space.findAll({
       where: {
-        spaceStatus: SpaceStatuses.AVAILABLE,
-        [Op.or]: [{ spaceName: { [Op.like]: `%${query}%` } }, { spaceLocation: { [Op.like]: `%${query}%` } }],
+        [Op.or]: [
+          // 공간 이름에서 검색
+          { spaceName: { [Op.like]: `%${query}%` } },
+          // 공간 주소에서 검색
+          { spaceLocation: { [Op.like]: `%${query}%` } },
+          // 공간을 등록한 유저의 이름으로 검색
+          Sequelize.where(Sequelize.col('User.userName'), { [Op.like]: `%${query}%` }),
+        ],
       },
       include: [{ model: Image }, { model: User, attributes: ['userName'] }],
     });
