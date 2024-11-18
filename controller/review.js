@@ -110,7 +110,6 @@ export const updateRatingBySpace = async (req, res) => {
     res.status(200).json({
       result: true,
       data: averageRating,
-      // message: `현재 공간의 별점 평균은 ${averageRating}점 입니다.`,
     });
   } catch (error) {
     res.status(500).json({

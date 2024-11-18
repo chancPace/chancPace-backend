@@ -6,11 +6,13 @@ const { Inquiry } = db;
 //ANCHOR - 문의 등록
 export const addInquiry = async (req, res) => {
   try {
-    const { title, email, contents, memberType } = req.body;
+    const { title, email, phoneNumber, name, contents, memberType } = req.body;
 
     await Inquiry.create({
       inquiryTitle: title,
       inquiryEmail: email,
+      inquiryName: name,
+      inquiryPhoneNumber: phoneNumber,
       inquiryContents: contents,
       memberType: memberType,
     });
@@ -81,10 +83,12 @@ export const getOneInquiry = async (req, res) => {
 //ANCHOR - 문의 수정
 export const updateInquiry = async (req, res) => {
   try {
-    const { inquiryId, title, email, contents, memberType, inquiryStatus, isDelete } = req.body;
+    const { inquiryId, title, email, phoneNumber, name, contents, memberType, inquiryStatus, isDelete } = req.body;
     const updatedData = {
       inquiryTitle: title,
       inquiryEmail: email,
+      inquiryName: name,
+      inquiryPhoneNumber: phoneNumber,
       inquiryContents: contents,
       memberType: memberType,
       inquiryStatus: inquiryStatus,
