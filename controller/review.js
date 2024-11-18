@@ -296,7 +296,7 @@ export const getOneReview = async (req, res) => {
   try {
     const { reviewId } = req.query;
     const findReview = await Review.findOne({
-      where: { id: reviewId, reviewStatus: ReviewStatus.AVAILABLE },
+      where: { id: reviewId },
       include: [
         {
           model: User,
