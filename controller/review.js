@@ -62,7 +62,6 @@ export const addReview = async (req, res) => {
       res.status(200).json({
         result: true,
         data: newReview,
-        // message: `${find.userName}님이 남긴 리뷰가 등록 되었습니다.`,
       });
     } else {
       return res.status(400).json({
