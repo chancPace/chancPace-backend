@@ -219,49 +219,29 @@ export const updateUser = async (req, res) => {
       });
     }
 
+    const updatedData = {
+      userName,
+      gender,
+      email,
+      password,
+      phoneNumber,
+      bankAccountName,
+      bankAccountNumber,
+      bankAccountOwner,
+      role,
+      accountStatus,
+      isMarketingAgreed,
+    };
+
     if (password) {
-      const encryption = await bcrypt.hash(password, 10);
-      const updatedData = {
-        userName,
-        gender,
-        email,
-        password: encryption,
-        phoneNumber,
-        bankAccountName,
-        bankAccountNumber,
-        bankAccountOwner,
-        role,
-        accountStatus,
-        isMarketingAgreed,
-      };
-
-      const updated = await updateUserData(id, updatedData);
-      res.status(200).json({
-        result: true,
-        data: updated,
-        message: `${user.userName}님의 정보를 성공적으로 업데이트했습니다.`,
-      });
-    } else {
-      const updatedData = {
-        userName,
-        gender,
-        email,
-        phoneNumber,
-        bankAccountName,
-        bankAccountNumber,
-        bankAccountOwner,
-        role,
-        accountStatus,
-        isMarketingAgreed,
-      };
-
-      const updated = await updateUserData(id, updatedData);
-      res.status(200).json({
-        result: true,
-        data: updated,
-        message: `${user.userName}님의 정보를 성공적으로 업데이트했습니다.`,
-      });
+      updatedData.password = await bcrypt.hash(password, 10);
     }
+
+    await updateUserData(id, updatedData);
+    res.status(200).json({
+      result: true,
+      message: `${user.email}님의 정보가 업데이트 되었습니다.`,
+    });
   } catch (error) {
     res.status(500).json({
       result: false,
