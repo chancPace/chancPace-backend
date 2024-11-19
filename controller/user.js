@@ -28,7 +28,18 @@ const updateUserData = async (id, updatedData, res) => {
 //ANCHOR - 회원가입
 export const signup = async (req, res) => {
   try {
-    const { email, userName, password, role, agreed, adminSecretKey } = req.body;
+    const {
+      email,
+      userName,
+      password,
+      role,
+      agreed,
+      adminSecretKey,
+      phoneNumber,
+      bankAccountName,
+      bankAccountNumber,
+      bankAccountOwner,
+    } = req.body;
 
     if (role === 'admin') {
       if (adminSecretKey !== process.env.ADMIN_SECRET_KEY) {
@@ -51,6 +62,10 @@ export const signup = async (req, res) => {
       password: encryption,
       role,
       isMarketingAgreed: agreed,
+      phoneNumber,
+      bankAccountName,
+      bankAccountNumber,
+      bankAccountOwner,
     });
 
     res.status(200).json({

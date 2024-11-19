@@ -1,8 +1,7 @@
 import db from '../models/index.js';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
-import { SpaceStatuses } from '../config/enum.js';
-import { Op } from 'sequelize';
+import { Op,Sequelize } from 'sequelize';
 import AWS from 'aws-sdk';
 import dotenv from 'dotenv';
 
