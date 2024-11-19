@@ -20,13 +20,13 @@ const InquiryModel = (sequelize) => {
       allowNull: false,
     },
     // 문의 이름
-    inquiryName:{
+    inquiryName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
     // 핸드폰 번호
-    inquiryPhoneNumber:{
-      type: DataTypes.INTEGER,
+    inquiryPhoneNumber: {
+      type: DataTypes.STRING,
       allowNull: false,
     },
     // 문의 내용
