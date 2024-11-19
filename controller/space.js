@@ -1,7 +1,7 @@
 import db from '../models/index.js';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
-import { Op,Sequelize } from 'sequelize';
+import { Op, Sequelize } from 'sequelize';
 import AWS from 'aws-sdk';
 import dotenv from 'dotenv';
 
@@ -277,8 +277,8 @@ export const getSearchSpace = async (req, res) => {
           { spaceName: { [Op.like]: `%${query}%` } },
           // 공간 주소에서 검색
           { spaceLocation: { [Op.like]: `%${query}%` } },
-          // 공간을 등록한 유저의 이름으로 검색
-          Sequelize.where(Sequelize.col('User.userName'), { [Op.like]: `%${query}%` }),
+          // 공간 관리자 이름으로 검색
+          { spaceAdminName: { [Op.like]: `%${query}%` } },
         ],
       },
       include: [{ model: Image }, { model: User, attributes: ['userName'] }],
